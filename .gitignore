@@ -1,0 +1,47 @@
+# Зависимости
+/node_modules
+/.pnp
+.pnp.js
+
+# Тестовые файлы
+/coverage
+
+# Сборка продакшена
+/build
+
+# Переменные окружения
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Логи
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Временные файлы
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Кэш ESLint
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs
+*.log

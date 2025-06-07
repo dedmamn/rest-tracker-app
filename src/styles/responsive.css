@@ -1,0 +1,290 @@
+/* Адаптивные стили для мобильных устройств */
+
+/* Брейкпоинты */
+/* xs: 0px - 599px */
+/* sm: 600px - 959px */
+/* md: 960px - 1279px */
+/* lg: 1280px - 1919px */
+/* xl: 1920px+ */
+
+/* Мобильные устройства (xs, sm) */
+@media (max-width: 959px) {
+    /* Корректировки для фиксированной навигации */
+    .MuiContainer-root {
+        padding-bottom: 80px !important;
+    }
+
+    /* Адаптация карточек для мобильных */
+    .MuiCard-root {
+        margin: 8px 0 !important;
+        border-radius: 12px !important;
+    }
+
+    /* Диалоги на полный экран для мобильных */
+    .MuiDialog-paper {
+        margin: 8px !important;
+        max-height: calc(100% - 16px) !important;
+    }
+
+    /* Уменьшение отступов в диалогах */
+    .MuiDialogContent-root {
+        padding: 16px !important;
+    }
+
+    .MuiDialogActions-root {
+        padding: 8px 16px 16px 16px !important;
+    }
+
+    /* Адаптация FAB для мобильных */
+    .MuiFab-root {
+        position: fixed !important;
+        bottom: 90px !important;
+        right: 16px !important;
+        z-index: 1000 !important;
+    }
+
+    /* Адаптация таблеток (chips) */
+    .MuiChip-root {
+        margin: 2px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Компактные кнопки */
+    .MuiButton-root {
+        padding: 6px 12px !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Адаптация текстовых полей */
+    .MuiTextField-root {
+        margin-bottom: 16px !important;
+    }
+
+    /* Адаптация AppBar */
+    .MuiAppBar-root {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    .MuiToolbar-root {
+        min-height: 56px !important;
+        padding: 0 16px !important;
+    }
+
+    /* Улучшения для тач-устройств */
+    .MuiIconButton-root {
+        padding: 12px !important;
+        touch-action: manipulation;
+    }
+
+    .MuiListItem-button {
+        min-height: 48px !important;
+        touch-action: manipulation;
+    }
+
+    /* Адаптация типографики */
+    .MuiTypography-h4 {
+        font-size: 1.75rem !important;
+    }
+
+    .MuiTypography-h5 {
+        font-size: 1.5rem !important;
+    }
+
+    .MuiTypography-h6 {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Очень маленькие экраны (телефоны в портретной ориентации) */
+@media (max-width: 599px) {
+    /* Полноэкранные диалоги */
+    .MuiDialog-paper {
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    /* Уменьшение отступов */
+    .MuiContainer-root {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    /* Компактная сетка */
+    .MuiGrid-spacing-xs-2 > .MuiGrid-item {
+        padding: 4px !important;
+    }
+
+    /* Адаптация статистических карточек */
+    .MuiCardContent-root {
+        padding: 12px !important;
+    }
+
+    /* Меньшие заголовки */
+    .MuiTypography-h4 {
+        font-size: 1.5rem !important;
+    }
+
+    .MuiTypography-h5 {
+        font-size: 1.25rem !important;
+    }
+
+    /* Компактные селекты */
+    .MuiSelect-select {
+        padding: 8px 14px !important;
+    }
+
+    /* Адаптация слайдеров */
+    .MuiSlider-root {
+        margin: 16px 0 !important;
+    }
+}
+
+/* Ландшафтная ориентация телефонов */
+@media (max-width: 959px) and (orientation: landscape) {
+    /* Уменьшение высоты элементов для экономии места */
+    .MuiAppBar-root .MuiToolbar-root {
+        min-height: 48px !important;
+    }
+
+    .MuiCard-root {
+        margin: 4px 0 !important;
+    }
+
+    .MuiCardContent-root {
+        padding: 12px !important;
+    }
+
+    /* Компактная навигация */
+    .MuiBottomNavigation-root {
+        min-height: 60px !important;
+    }
+
+    .MuiFab-root {
+        bottom: 70px !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+}
+
+/* Планшеты (md) */
+@media (min-width: 960px) and (max-width: 1279px) {
+    /* Увеличение максимальной ширины контейнера */
+    .MuiContainer-maxWidthSm {
+        max-width: 720px !important;
+    }
+
+    /* Адаптация сетки для планшетов */
+    .MuiGrid-grid-xs-12 {
+        flex-basis: 50% !important;
+        max-width: 50% !important;
+    }
+
+    /* Больше места для диалогов */
+    .MuiDialog-paper {
+        margin: 32px !important;
+    }
+}
+
+/* Десктоп (lg, xl) */
+@media (min-width: 1280px) {
+    /* Ограничение максимальной ширины для лучшей читаемости */
+    .MuiContainer-root {
+        max-width: 800px !important;
+    }
+
+    /* Боковая навигация вместо нижней */
+    .MuiBottomNavigation-root {
+        display: none !important;
+    }
+
+    /* Адаптация FAB для десктопа */
+    .MuiFab-root {
+        bottom: 32px !important;
+        right: 32px !important;
+    }
+
+    /* Hover эффекты для десктопа */
+    .MuiCard-root:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .MuiButton-root:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        transition: all 0.2s ease !important;
+    }
+}
+
+/* Поддержка тёмной темы */
+@media (prefers-color-scheme: dark) {
+    .MuiAppBar-colorTransparent {
+        background-color: rgba(18, 18, 18, 0.9) !important;
+    }
+
+    .MuiBottomNavigation-root {
+        background: rgba(18, 18, 18, 0.95) !important;
+    }
+}
+
+/* Поддержка высоких DPI экранов */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Более чёткие тени и границы */
+    .MuiCard-root {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+    }
+
+    .MuiFab-root {
+        box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 
+                    0 6px 10px 0 rgba(0, 0, 0, 0.14), 
+                    0 1px 18px 0 rgba(0, 0, 0, 0.12) !important;
+    }
+}
+
+/* Специальные стили для iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    /* Фикс для безопасной зоны */
+    .MuiBottomNavigation-root {
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+
+    /* Предотвращение зума при фокусе на input */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Отключение выбора текста для элементов UI */
+    .MuiBottomNavigationAction-root,
+    .MuiFab-root,
+    .MuiIconButton-root {
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+}
+
+/* Анимации для улучшения UX */
+@media (prefers-reduced-motion: no-preference) {
+    .MuiCard-root,
+    .MuiButton-root,
+    .MuiFab-root {
+        transition: all 0.2s ease !important;
+    }
+
+    .MuiDialog-paper {
+        transition: transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms !important;
+    }
+}
+
+/* Отключение анимаций для пользователей с предпочтением уменьшенного движения */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
