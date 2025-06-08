@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#4CAF50" />
@@ -13,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="Трекер отдыха" />
     
     <!-- Иконки для различных устройств -->
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.svg" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
     <!-- Шрифты -->
@@ -99,8 +100,11 @@
             }, 500);
         });
         
-        // Регистрация Service Worker для PWA
-        if ('serviceWorker' in navigator) {
+        // Регистрация Service Worker для PWA (только в продакшене)
+        if ('serviceWorker' in navigator && 
+            window.location.protocol === 'https:' && 
+            !window.location.hostname.includes('localhost') &&
+            !window.location.hostname.includes('127.0.0.1')) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(function(registration) {
@@ -110,6 +114,19 @@
                         console.log('SW registration failed: ', registrationError);
                     });
             });
+        } else {
+            console.log('🚫 Service Worker отключен в режиме разработки');
+            
+            // Удаляем существующий SW если он был зарегистрирован ранее
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister().then(function(boolean) {
+                            console.log('🗑️ Service Worker удален:', boolean);
+                        });
+                    }
+                });
+            }
         }
     </script>
 </body>

@@ -43,6 +43,7 @@ import {
 import { Settings as SettingsType, Activity } from '../types';
 import { StorageManager } from '../utils/storage';
 import { DataFormatter, NotificationManager } from '../utils/helpers';
+import PWAInstall from '../components/PWAInstall';
 
 interface SettingsProps {
     settings: SettingsType;
@@ -379,6 +380,16 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
                     </CardContent>
                 </Card>
 
+                {/* PWA функции */}
+                <Card sx={{ mb: 2 }}>
+                    <CardContent>
+                        <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                            📱 Установка приложения
+                        </Typography>
+                        <PWAInstall />
+                    </CardContent>
+                </Card>
+
                 {/* Информация о приложении */}
                 <Card>
                     <CardContent>
@@ -388,13 +399,16 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
                         </Typography>
                         
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                            <strong>Трекер отдыха</strong> v1.0.0
+                            <strong>Трекер отдыха</strong> v1.0.0 (PWA)
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                             Приложение для отслеживания активностей отдыха и поддержания баланса между работой и личной жизнью.
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                             Данные хранятся локально в вашем браузере.
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            ✅ Работает офлайн | ✅ Можно установить как приложение | ✅ Быстрая загрузка
                         </Typography>
                     </CardContent>
                 </Card>

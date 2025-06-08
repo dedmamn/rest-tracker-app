@@ -1,0 +1,64 @@
+{
+  "name": "Трекер отдыха",
+  "short_name": "Трекер отдыха",
+  "description": "Приложение для отслеживания активностей отдыха и поддержания баланса между работой и личной жизнью",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#4CAF50",
+  "background_color": "#ffffff",
+  "scope": "/",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["lifestyle", "productivity", "health"],
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Добавить активность",
+      "short_name": "Добавить",
+      "description": "Быстро добавить новую активность отдыха",
+      "url": "/activities?action=add",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Настройки",
+      "short_name": "Настройки",
+      "description": "Открыть настройки приложения",
+      "url": "/settings",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
