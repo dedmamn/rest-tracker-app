@@ -68,6 +68,18 @@ const App = () => {
         }
     }, [activities, settings]);
 
+    // Обновление meta theme-color и data-attribute в зависимости от темы
+    useEffect(() => {
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            const color = settings.theme === 'dark' ? '#121212' : '#4CAF50';
+            metaThemeColor.setAttribute('content', color);
+        }
+        
+        // Добавляем data-attribute для CSS селекторов
+        document.documentElement.setAttribute('data-mui-color-scheme', settings.theme);
+    }, [settings.theme]);
+
     const handleCreateBackup = () => {
         StorageManager.createBackup(activities, settings);
     };
