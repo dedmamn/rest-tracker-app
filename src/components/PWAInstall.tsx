@@ -1,11 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Alert, Snackbar, Typography } from '@mui/material';
-import { Download, Wifi, WifiOff } from '@mui/icons-material';
+import { Box, Button, Alert, Snackbar, Typography, Card, CardContent, Chip } from '@mui/material';
+import { Download, Wifi, WifiOff, Apple, Android, PhoneIphone, Share } from '@mui/icons-material';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
+
+// Определение типа устройства и браузера
+const getDeviceInfo = () => {
+  const userAgent = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+  const isAndroid = /Android/.test(userAgent);
+  const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+  const isChrome = /Chrome/.test(userAgent);
+  const isFirefox = /Firefox/.test(userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  
+  return {
+    isIOS,
+    isAndroid,
+    isSafari,
+    isChrome,
+    isFirefox,
+    isStandalone,
+    isMobile: isIOS || isAndroid
+  };
+};
 
 const PWAInstall: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -13,6 +34,8 @@ const PWAInstall: React.FC = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showOfflineAlert, setShowOfflineAlert] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [deviceInfo] = useState(getDeviceInfo());
 
   useEffect(() => {
     // Проверка доступности установки PWA
@@ -94,19 +117,129 @@ const PWAInstall: React.FC = () => {
     window.location.reload();
   };
 
+  // Проверяем, нужно ли показывать инструкции для мобильных
+  const shouldShowMobileInstructions = () => {
+    // Если уже установлено как PWA
+    if (deviceInfo.isStandalone) return false;
+    
+    // Если есть нативная поддержка установки (Android Chrome)
+    if (isInstallable) return false;
+    
+    // Показываем инструкции для iOS Safari и других мобильных браузеров
+    return deviceInfo.isMobile;
+  };
+
+  const getInstallInstructions = () => {
+    if (deviceInfo.isIOS && deviceInfo.isSafari) {
+      return {
+        title: 'Установка на iPhone/iPad',
+        icon: <Apple />,
+        steps: [
+          'Нажмите кнопку "Поделиться" внизу экрана',
+          'Выберите "На экран "Домой""',
+          'Нажмите "Добавить" в правом верхнем углу'
+        ],
+        buttonText: 'Поделиться',
+        buttonIcon: <Share />
+      };
+    } else if (deviceInfo.isAndroid) {
+      return {
+        title: 'Установка на Android',
+        icon: <Android />,
+        steps: [
+          'Откройте меню браузера (⋮)',
+          'Выберите "Добавить на главный экран"',
+          'Нажмите "Установить" или "Добавить"'
+        ],
+        buttonText: 'Меню браузера',
+        buttonIcon: <PhoneIphone />
+      };
+    }
+    return null;
+  };
+
+  const instructions = getInstallInstructions();
+
   return (
     <Box>
-      {/* Кнопка установки PWA */}
+      {/* Если приложение уже установлено */}
+      {deviceInfo.isStandalone && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          <Typography variant="body2">
+            🎉 Приложение успешно установлено!
+          </Typography>
+        </Alert>
+      )}
+
+      {/* Кнопка установки PWA (для поддерживаемых браузеров) */}
       {isInstallable && (
         <Button
           variant="contained"
           color="primary"
           startIcon={<Download />}
           onClick={handleInstallClick}
-          sx={{ mb: 2 }}
+          fullWidth
+          sx={{ mb: 2, py: 1.5 }}
         >
           Установить приложение
         </Button>
+      )}
+
+      {/* Инструкции для мобильных устройств */}
+      {shouldShowMobileInstructions() && instructions && (
+        <Card sx={{ mb: 2, bgcolor: 'primary.50' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              {instructions.icon}
+              <Typography variant="h6" sx={{ ml: 1, color: 'primary.main' }}>
+                {instructions.title}
+              </Typography>
+            </Box>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+              Установите приложение на домашний экран для лучшего опыта:
+            </Typography>
+            
+            <Box component="ol" sx={{ pl: 2, m: 0 }}>
+              {instructions.steps.map((step, index) => (
+                <Box component="li" key={index} sx={{ mb: 1 }}>
+                  <Typography variant="body2">{step}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            {deviceInfo.isIOS && (
+              <Box sx={{ mt: 2 }}>
+                <Chip 
+                  icon={<Share />} 
+                  label="Найдите кнопку поделиться"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                />
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Информация о текущем устройстве (только в development) */}
+      {process.env.NODE_ENV === 'development' && (
+        <Card sx={{ mb: 2, bgcolor: 'grey.50' }}>
+          <CardContent>
+            <Typography variant="subtitle2" gutterBottom>
+              Информация об устройстве:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {deviceInfo.isIOS && <Chip label="iOS" size="small" />}
+              {deviceInfo.isAndroid && <Chip label="Android" size="small" />}
+              {deviceInfo.isSafari && <Chip label="Safari" size="small" />}
+              {deviceInfo.isChrome && <Chip label="Chrome" size="small" />}
+              {deviceInfo.isStandalone && <Chip label="PWA Mode" size="small" color="success" />}
+              {isInstallable && <Chip label="Installable" size="small" color="primary" />}
+            </Box>
+          </CardContent>
+        </Card>
       )}
 
       {/* Индикатор статуса сети */}

@@ -1,12 +1,7 @@
 const CACHE_NAME = 'rest-tracker-v1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
-  '/apple-touch-icon.png',
   // Google Fonts
   'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
   'https://fonts.googleapis.com/icon?family=Material+Icons'
