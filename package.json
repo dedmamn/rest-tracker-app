@@ -34,10 +34,10 @@
     "@types/react-dom": "^18.0.10",
     "@types/uuid": "^9.0.0"
   },
-  "homepage": "http://yourhomepage.com",
+  "homepage": "https://dedmamn.github.io/rest-tracker-app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/rest-tracker-app.git"
+    "url": "https://github.com/dedmamn/rest-tracker-app.git"
   },
   "browserslist": {
     "production": [
