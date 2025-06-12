@@ -74,7 +74,7 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Router>
+            <Router basename="/rest-tracker-app">
                 <Box sx={{ 
                     minHeight: '100vh',
                     backgroundColor: theme.palette.background.default,

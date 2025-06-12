@@ -2,12 +2,12 @@
   "name": "Трекер отдыха",
   "short_name": "Трекер отдыха",
   "description": "Приложение для отслеживания активностей отдыха и поддержания баланса между работой и личной жизнью",
-  "start_url": "/",
+  "start_url": "/rest-tracker-app/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#4CAF50",
   "background_color": "#ffffff",
-  "scope": "/",
+  "scope": "/rest-tracker-app/",
   "lang": "ru",
   "dir": "ltr",
   "categories": ["lifestyle", "productivity", "health"],
@@ -41,7 +41,7 @@
       "name": "Добавить активность",
       "short_name": "Добавить",
       "description": "Быстро добавить новую активность отдыха",
-      "url": "/activities?action=add",
+      "url": "/rest-tracker-app/activities?action=add",
       "icons": [
         {
           "src": "/icon-192x192.svg",
@@ -54,7 +54,7 @@
       "name": "Настройки",
       "short_name": "Настройки",
       "description": "Открыть настройки приложения",
-      "url": "/settings",
+      "url": "/rest-tracker-app/settings",
       "icons": [
         {
           "src": "/icon-192x192.svg",

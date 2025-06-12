@@ -1,7 +1,8 @@
 const CACHE_NAME = 'rest-tracker-v1';
+const BASE_PATH = '/rest-tracker-app';
 const urlsToCache = [
-  '/',
-  '/manifest.json',
+  BASE_PATH + '/',
+  BASE_PATH + '/manifest.json',
   // Google Fonts
   'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
   'https://fonts.googleapis.com/icon?family=Material+Icons'
@@ -102,7 +103,7 @@ self.addEventListener('fetch', function(event) {
           const shouldCache = url.includes('manifest.json') || 
                             url.includes('icon') || 
                             url.includes('fonts.googleapis.com') ||
-                            url === location.origin + '/';
+                            url === location.origin + BASE_PATH + '/';
 
           if (shouldCache && event.request.method === 'GET') {
             const responseToCache = response.clone();
@@ -122,7 +123,7 @@ self.addEventListener('fetch', function(event) {
           
           // Возвращаем офлайн страницу для навигационных запросов
           if (event.request.destination === 'document') {
-            return caches.match('/').then(function(response) {
+            return caches.match(BASE_PATH + '/').then(function(response) {
               return response || new Response('Приложение недоступно офлайн', {
                 status: 503,
                 statusText: 'Service Unavailable',
@@ -204,7 +205,7 @@ self.addEventListener('notificationclick', function(event) {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow(BASE_PATH + '/')
     );
   }
 });
