@@ -12,6 +12,8 @@
     /* Корректировки для фиксированной навигации */
     .MuiContainer-root {
         padding-bottom: 80px !important;
+        padding-left: max(8px, env(safe-area-inset-left)) !important;
+        padding-right: max(8px, env(safe-area-inset-right)) !important;
     }
 
     /* Адаптация карточек для мобильных */
@@ -221,16 +223,8 @@
     }
 }
 
-/* Поддержка тёмной темы */
-@media (prefers-color-scheme: dark) {
-    .MuiAppBar-colorTransparent {
-        background-color: rgba(18, 18, 18, 0.9) !important;
-    }
-
-    .MuiBottomNavigation-root {
-        background: rgba(18, 18, 18, 0.95) !important;
-    }
-}
+/* Удаляем автоматическую поддержку темной темы через prefers-color-scheme, 
+   чтобы приложение полностью контролировало тему через Material-UI */
 
 /* Поддержка высоких DPI экранов */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
@@ -250,7 +244,7 @@
 @supports (-webkit-touch-callout: none) {
     /* Фикс для безопасной зоны */
     .MuiBottomNavigation-root {
-        padding-bottom: env(safe-area-inset-bottom) !important;
+        padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
     }
 
     /* Предотвращение зума при фокусе на input */
@@ -264,6 +258,35 @@
     .MuiIconButton-root {
         -webkit-user-select: none !important;
         user-select: none !important;
+    }
+
+    /* Фикс для viewport на iOS */
+    html {
+        height: -webkit-fill-available;
+    }
+    
+    body {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Дополнительные исправления для мобильных браузеров */
+@media (max-width: 959px) {
+    /* Фикс для viewport на мобильных устройствах */
+    html {
+        height: 100%;
+        height: -webkit-fill-available;
+    }
+    
+    body {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+    
+    /* Исправление для области просмотра */
+    #root {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
     }
 }
 

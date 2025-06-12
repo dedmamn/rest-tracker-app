@@ -7,15 +7,15 @@ export interface AppData {
     lastBackup: string;
 }
 
-const STORAGE_KEY = 'restTracker';
-const BACKUP_KEY = 'restTracker_backup';
+const STORAGE_KEY = 'rest-tracker-data';
+const BACKUP_KEY = 'rest-tracker-backup';
 const VERSION = '1.0.0';
 
 export class StorageManager {
     // Сохранение данных
     static saveData(activities: Activity[], settings: Settings): void {
         const data: AppData = {
-            activities,
+            activities: this.serializeActivities(activities),
             settings,
             version: VERSION,
             lastBackup: new Date().toISOString()
@@ -23,9 +23,13 @@ export class StorageManager {
 
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            console.log('Данные успешно сохранены');
+            console.log('✅ Данные сохранены:', { 
+                activities: activities.length, 
+                settings: settings.theme,
+                key: STORAGE_KEY 
+            });
         } catch (error) {
-            console.error('Ошибка сохранения данных:', error);
+            console.error('❌ Ошибка сохранения данных:', error);
             throw new Error('Не удалось сохранить данные');
         }
     }
@@ -33,8 +37,19 @@ export class StorageManager {
     // Загрузка данных
     static loadData(): { activities: Activity[]; settings: Settings } | null {
         try {
-            const dataString = localStorage.getItem(STORAGE_KEY);
+            // Сначала пытаемся загрузить из основного ключа
+            let dataString = localStorage.getItem(STORAGE_KEY);
+            
+            // Если основных данных нет, пытаемся восстановить из backup
             if (!dataString) {
+                console.log('🔄 Основные данные не найдены, проверяем backup...');
+                const backupData = this.loadBackup();
+                if (backupData) {
+                    console.log('✅ Данные восстановлены из backup');
+                    // Сохраняем восстановленные данные в основной ключ
+                    this.saveData(backupData.activities, backupData.settings);
+                    return backupData;
+                }
                 return null;
             }
 
@@ -42,26 +57,39 @@ export class StorageManager {
             
             // Проверка версии и миграция данных при необходимости
             if (data.version !== VERSION) {
-                console.log('Обнаружена старая версия данных, выполняется миграция...');
+                console.log('🔄 Обнаружена старая версия данных, выполняется миграция...');
                 const migratedData = this.migrateData(data);
                 this.saveData(migratedData.activities, migratedData.settings);
                 return migratedData;
             }
 
-            return {
-                activities: data.activities || [],
+            const result = {
+                activities: this.deserializeActivities(data.activities || []),
                 settings: data.settings || this.getDefaultSettings()
             };
+
+            console.log('✅ Данные загружены:', { 
+                activities: result.activities.length,
+                settings: result.settings.theme,
+                key: STORAGE_KEY
+            });
+
+            return result;
         } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-            return this.loadBackup();
+            console.error('❌ Ошибка загрузки данных:', error);
+            const backupData = this.loadBackup();
+            if (backupData) {
+                console.log('✅ Данные восстановлены из backup после ошибки');
+                return backupData;
+            }
+            return null;
         }
     }
 
     // Создание резервной копии
     static createBackup(activities: Activity[], settings: Settings): void {
         const backupData: AppData = {
-            activities,
+            activities: this.serializeActivities(activities),
             settings,
             version: VERSION,
             lastBackup: new Date().toISOString()
@@ -69,10 +97,38 @@ export class StorageManager {
 
         try {
             localStorage.setItem(BACKUP_KEY, JSON.stringify(backupData));
-            console.log('Резервная копия создана');
+            console.log('🗄️ Резервная копия создана');
         } catch (error) {
-            console.error('Ошибка создания резервной копии:', error);
+            console.error('❌ Ошибка создания резервной копии:', error);
         }
+    }
+
+    // Умное создание резервной копии (раз в день вечером)
+    static createSmartBackup(activities: Activity[], settings: Settings): void {
+        const now = new Date();
+        const hour = now.getHours();
+        
+        // Backup только вечером (22:00-23:59)
+        if (hour < 22) {
+            return;
+        }
+
+        const lastBackupTime = localStorage.getItem('lastBackupTime');
+        
+        // Проверяем, прошло ли больше 20 часов с последнего backup
+        if (lastBackupTime) {
+            const timeDiff = now.getTime() - new Date(lastBackupTime).getTime();
+            const hoursDiff = timeDiff / (1000 * 60 * 60);
+            
+            if (hoursDiff < 20) {
+                return; // Еще рано для backup
+            }
+        }
+
+        // Создаем backup
+        this.createBackup(activities, settings);
+        localStorage.setItem('lastBackupTime', now.toISOString());
+        console.log('🌙 Создан вечерний backup');
     }
 
     // Восстановление из резервной копии
@@ -80,18 +136,19 @@ export class StorageManager {
         try {
             const backupString = localStorage.getItem(BACKUP_KEY);
             if (!backupString) {
+                console.log('🔍 Backup не найден');
                 return null;
             }
 
             const backup: AppData = JSON.parse(backupString);
-            console.log('Данные восстановлены из резервной копии');
+            console.log('📦 Данные восстановлены из резервной копии');
             
             return {
-                activities: backup.activities || [],
+                activities: this.deserializeActivities(backup.activities || []),
                 settings: backup.settings || this.getDefaultSettings()
             };
         } catch (error) {
-            console.error('Ошибка восстановления из резервной копии:', error);
+            console.error('❌ Ошибка восстановления из резервной копии:', error);
             return null;
         }
     }
@@ -133,6 +190,33 @@ export class StorageManager {
         }
     }
 
+    // Сериализация активностей (преобразование Date в строки)
+    private static serializeActivities(activities: Activity[]): any[] {
+        return activities.map(activity => ({
+            ...activity,
+            createdAt: activity.createdAt.toISOString(),
+            completedDates: activity.completedDates.map(date => date.toISOString()),
+            recurrence: activity.recurrence ? {
+                ...activity.recurrence,
+                endDate: activity.recurrence.endDate ? activity.recurrence.endDate.toISOString() : undefined
+            } : undefined
+        }));
+    }
+
+    // Десериализация активностей (преобразование строк в Date)
+    private static deserializeActivities(activities: any[]): Activity[] {
+        return activities.map(activity => ({
+            ...activity,
+            createdAt: new Date(activity.createdAt),
+            completedDates: activity.completedDates ? 
+                activity.completedDates.map((dateStr: string) => new Date(dateStr)) : [],
+            recurrence: activity.recurrence ? {
+                ...activity.recurrence,
+                endDate: activity.recurrence.endDate ? new Date(activity.recurrence.endDate) : undefined
+            } : undefined
+        }));
+    }
+
     // Валидация импортированных данных
     private static validateImportedData(data: any): boolean {
         if (!data || typeof data !== 'object') {
@@ -142,7 +226,7 @@ export class StorageManager {
         // Проверка структуры activities
         if (data.activities && Array.isArray(data.activities)) {
             for (const activity of data.activities) {
-                if (!activity.id || !activity.title || !activity.type) {
+                if (!activity.id || !activity.name || !activity.type) {
                     return false;
                 }
             }
@@ -163,9 +247,12 @@ export class StorageManager {
 
     // Миграция данных между версиями
     private static migrateData(oldData: any): { activities: Activity[]; settings: Settings } {
-        // Здесь можно добавить логику миграции для будущих версий
+        // Миграция активностей (десериализация дат)
+        const activities = oldData.activities ? 
+            this.deserializeActivities(oldData.activities) : [];
+
         return {
-            activities: oldData.activities || [],
+            activities,
             settings: { ...this.getDefaultSettings(), ...oldData.settings }
         };
     }

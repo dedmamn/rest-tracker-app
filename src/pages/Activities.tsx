@@ -152,8 +152,10 @@ const Activities: React.FC<ActivitiesProps> = ({ activities, setActivities }) =>
                 elevation={0}
                 sx={{ 
                     backdropFilter: 'blur(8px)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' 
+                        ? 'rgba(18, 18, 18, 0.9)' 
+                        : 'rgba(255, 255, 255, 0.9)',
+                    borderBottom: (theme) => `1px solid ${theme.palette.divider}`
                 }}
             >
                 <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 2 }}>

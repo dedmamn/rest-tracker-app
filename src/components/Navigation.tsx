@@ -24,7 +24,8 @@ const Navigation: React.FC = () => {
                 right: 0, 
                 zIndex: 1000,
                 borderRadius: '20px 20px 0 0',
-                boxShadow: '0 -2px 20px rgba(0,0,0,0.1)'
+                boxShadow: (theme) => `0 -2px 20px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)'}`,
+                bgcolor: 'background.paper'
             }} 
             elevation={3}
         >
@@ -33,8 +34,9 @@ const Navigation: React.FC = () => {
                 sx={{
                     borderRadius: '20px 20px 0 0',
                     paddingTop: '8px',
-                    paddingBottom: 'env(safe-area-inset-bottom)',
-                    minHeight: '70px'
+                    paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
+                    minHeight: '70px',
+                    bgcolor: 'transparent'
                 }}
             >
                 <BottomNavigationAction 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Activity, Settings } from '../types';
 import { StorageManager } from '../utils/storage';
+import { DataMigration } from '../utils/dataMigration';
 
 interface UseDataManagerReturn {
     activities: Activity[];
@@ -30,27 +31,47 @@ export const useDataManager = (): UseDataManagerReturn => {
 
     // Загрузка данных при инициализации
     useEffect(() => {
-        const loadedData = StorageManager.loadData();
+        let loadedData = StorageManager.loadData();
+        
+        // Если данных нет, пытаемся мигрировать из старых ключей
+        if (!loadedData && DataMigration.hasOldData()) {
+            console.log('🔄 Обнаружены старые данные, начинаем миграцию...');
+            DataMigration.showOldDataInfo();
+            loadedData = DataMigration.migrateAllData();
+        }
+        
         if (loadedData) {
             setActivities(loadedData.activities);
             setSettings(loadedData.settings);
+            console.log('✅ Данные успешно загружены:', {
+                activities: loadedData.activities.length,
+                theme: loadedData.settings.theme
+            });
+        } else {
+            console.log('📝 Начинаем с пустыми данными');
         }
     }, []);
 
+    // Флаг для отслеживания инициализации
+    const [isInitialized, setIsInitialized] = useState(false);
+
     // Автоматическое сохранение при изменении данных
     useEffect(() => {
-        if (activities.length > 0 || Object.keys(settings).length > 0) {
+        if (isInitialized) {
             StorageManager.saveData(activities, settings);
             
-            // Автоматическое создание резервной копии каждые 10 минут
-            const now = new Date();
-            const lastBackup = localStorage.getItem('lastBackupTime');
-            if (!lastBackup || now.getTime() - new Date(lastBackup).getTime() > 10 * 60 * 1000) {
-                StorageManager.createBackup(activities, settings);
-                localStorage.setItem('lastBackupTime', now.toISOString());
-            }
+            // Умный backup (раз в день вечером)
+            StorageManager.createSmartBackup(activities, settings);
         }
-    }, [activities, settings]);
+    }, [activities, settings, isInitialized]);
+
+    // Устанавливаем флаг инициализации после первой загрузки
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsInitialized(true);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Добавление новой активности
     const addActivity = useCallback((activityData: Omit<Activity, 'id'>) => {

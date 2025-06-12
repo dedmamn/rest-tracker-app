@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box } from '@mui/material';
@@ -7,19 +7,19 @@ import Activities from './pages/Activities';
 import Settings from './pages/Settings';
 import Navigation from './components/Navigation';
 import BackupReminder from './components/BackupReminder';
-import { Activity, Settings as SettingsType } from './types';
-import { StorageManager } from './utils/storage';
+import { useDataManager } from './hooks/useDataManager';
+import { testLocalStorage, debugLocalStorage } from './utils/storageTest';
 import './styles/global.css';
 import './styles/responsive.css';
 
 const App = () => {
-    const [activities, setActivities] = useState<Activity[]>([]);
-    const [settings, setSettings] = useState<SettingsType>({
-        notificationsEnabled: true,
-        theme: 'light',
-        defaultActivityDuration: 30,
-        reminderTime: '09:00'
-    });
+    const {
+        activities,
+        settings,
+        setActivities,
+        setSettings,
+        createBackup
+    } = useDataManager();
 
     const theme = createTheme({
         palette: {
@@ -44,32 +44,31 @@ const App = () => {
                 },
             },
         },
-    });    // Загрузка данных из localStorage при запуске
+    });
+
+    // Тестирование localStorage при запуске (только в development)
     useEffect(() => {
-        const loadedData = StorageManager.loadData();
-        if (loadedData) {
-            setActivities(loadedData.activities);
-            setSettings(loadedData.settings);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔧 Запуск тестов localStorage...');
+            testLocalStorage();
+            debugLocalStorage();
         }
     }, []);
 
-    // Сохранение данных в localStorage при изменении
+    // Обновление meta theme-color и data-attribute в зависимости от темы
     useEffect(() => {
-        if (activities.length > 0 || Object.keys(settings).length > 0) {
-            StorageManager.saveData(activities, settings);
-            
-            // Создание резервной копии каждые 10 минут
-            const now = new Date();
-            const lastBackup = localStorage.getItem('lastBackupTime');
-            if (!lastBackup || now.getTime() - new Date(lastBackup).getTime() > 10 * 60 * 1000) {
-                StorageManager.createBackup(activities, settings);
-                localStorage.setItem('lastBackupTime', now.toISOString());
-            }
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            const color = settings.theme === 'dark' ? '#121212' : '#4CAF50';
+            metaThemeColor.setAttribute('content', color);
         }
-    }, [activities, settings]);
+        
+        // Добавляем data-attribute для CSS селекторов
+        document.documentElement.setAttribute('data-mui-color-scheme', settings.theme);
+    }, [settings.theme]);
 
     const handleCreateBackup = () => {
-        StorageManager.createBackup(activities, settings);
+        createBackup();
     };
 
     return (
