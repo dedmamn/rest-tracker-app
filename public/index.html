@@ -8,6 +8,7 @@
     <meta name="description" content="Трекер отдыха - приложение для отслеживания активностей отдыха и поддержания баланса между работой и личной жизнью" />
     
     <!-- PWA мета-теги -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Трекер отдыха" />
@@ -105,7 +106,7 @@
             !window.location.hostname.includes('localhost') &&
             !window.location.hostname.includes('127.0.0.1')) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('/rest-tracker-app/service-worker.js')
                     .then(function(registration) {
                         console.log('SW registered: ', registration);
                     })

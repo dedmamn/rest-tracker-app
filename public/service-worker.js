@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rest-tracker-v1';
+const CACHE_NAME = 'rest-tracker-v2';
 const BASE_PATH = '/rest-tracker-app';
 const urlsToCache = [
   BASE_PATH + '/',
@@ -171,8 +171,8 @@ self.addEventListener('push', function(event) {
   
   const options = {
     body: event.data ? event.data.text() : 'Новое уведомление от Трекера отдыха',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
+    icon: BASE_PATH + '/icon-192x192.png',
+    badge: BASE_PATH + '/icon-192x192.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -182,12 +182,12 @@ self.addEventListener('push', function(event) {
       {
         action: 'explore',
         title: 'Открыть приложение',
-        icon: '/icon-192x192.png'
+        icon: BASE_PATH + '/icon-192x192.png'
       },
       {
         action: 'close',
         title: 'Закрыть',
-        icon: '/icon-192x192.png'
+        icon: BASE_PATH + '/icon-192x192.png'
       }
     ]
   };
