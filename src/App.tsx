@@ -8,6 +8,7 @@ import Settings from './pages/Settings';
 import Navigation from './components/Navigation';
 import BackupReminder from './components/BackupReminder';
 import { useDataManager } from './hooks/useDataManager';
+import { useNotifications } from './hooks/useNotifications';
 import { testLocalStorage, debugLocalStorage } from './utils/storageTest';
 import './styles/global.css';
 import './styles/responsive.css';
@@ -20,6 +21,9 @@ const App = () => {
         setSettings,
         createBackup
     } = useDataManager();
+
+    // Инициализация системы уведомлений
+    const { sendTestNotification, getNotificationStatus, clearNotifications } = useNotifications({ settings });
 
     const theme = createTheme({
         palette: {
@@ -52,8 +56,12 @@ const App = () => {
             console.log('🔧 Запуск тестов localStorage...');
             testLocalStorage();
             debugLocalStorage();
+            
+            // Проверка статуса уведомлений
+            const notificationStatus = getNotificationStatus();
+            console.log('🔔 Статус уведомлений:', notificationStatus);
         }
-    }, []);
+    }, [getNotificationStatus]);
 
     // Обновление meta theme-color и data-attribute в зависимости от темы
     useEffect(() => {

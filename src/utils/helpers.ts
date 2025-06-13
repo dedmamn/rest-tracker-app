@@ -25,6 +25,9 @@ export const generateRecurrenceOptions = (frequency: string): string[] => {
 };
 
 export class NotificationManager {
+    // Система автоматических напоминаний
+    private static notificationIntervals: { [key: string]: number } = {};
+
     // Запрос разрешения на уведомления
     static async requestPermission(): Promise<boolean> {
         if (!('Notification' in window)) {
@@ -82,6 +85,137 @@ export class NotificationManager {
                 tag: 'backup-reminder'
             }
         );
+    }
+
+    // Планирование ежедневных уведомлений
+    static scheduleDaily(reminderTime: string): void {
+        // Очищаем предыдущие интервалы
+        this.clearScheduled();
+
+        if (!reminderTime) return;
+
+        const [hours, minutes] = reminderTime.split(':').map(Number);
+        
+        // Функция для расчета времени до следующего напоминания
+        const getNextReminderTime = (): number => {
+            const now = new Date();
+            const reminderDate = new Date();
+            reminderDate.setHours(hours, minutes, 0, 0);
+
+            // Если время уже прошло сегодня, планируем на завтра
+            if (reminderDate <= now) {
+                reminderDate.setDate(reminderDate.getDate() + 1);
+            }
+
+            return reminderDate.getTime() - now.getTime();
+        };
+
+        // Функция отправки напоминания
+        const sendReminder = () => {
+            this.sendDailyReminder();
+            // Планируем следующее напоминание через 24 часа
+            this.notificationIntervals['daily'] = window.setTimeout(() => {
+                sendReminder();
+            }, 24 * 60 * 60 * 1000);
+        };
+
+        // Планируем первое напоминание
+        this.notificationIntervals['daily'] = window.setTimeout(() => {
+            sendReminder();
+        }, getNextReminderTime());
+
+        console.log(`📅 Ежедневные напоминания запланированы на ${reminderTime}`);
+    }
+
+    // Отправка ежедневного напоминания
+    static async sendDailyReminder(): Promise<void> {
+        const hasPermission = await this.requestPermission();
+        if (!hasPermission) return;
+
+        // Получаем активные активности из localStorage
+        try {
+            const data = localStorage.getItem('rest-tracker-data');
+            if (!data) return;
+
+            const appData = JSON.parse(data);
+            const activeActivities = appData.activities?.filter((activity: any) => activity.isActive) || [];
+
+            if (activeActivities.length === 0) {
+                await this.sendNotification(
+                    'Время отдыха!',
+                    {
+                        body: 'Не забудьте запланировать активности для отдыха сегодня',
+                        tag: 'daily-reminder',
+                        requireInteraction: true
+                    }
+                );
+            } else {
+                const randomActivity = activeActivities[Math.floor(Math.random() * activeActivities.length)];
+                await this.sendNotification(
+                    'Время отдыха!',
+                    {
+                        body: `Рекомендуемая активность: ${randomActivity.name}`,
+                        tag: 'daily-reminder',
+                        requireInteraction: true
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке ежедневного напоминания:', error);
+        }
+    }
+
+    // Очистка запланированных уведомлений
+    static clearScheduled(): void {
+        Object.values(this.notificationIntervals).forEach(intervalId => {
+            if (intervalId) {
+                clearTimeout(intervalId);
+            }
+        });
+        this.notificationIntervals = {};
+        console.log('🧹 Запланированные уведомления очищены');
+    }
+
+    // Проверка статуса уведомлений
+    static getNotificationStatus(): { 
+        permission: NotificationPermission;
+        scheduled: boolean;
+        nextReminder?: string;
+        activeReminders: string[];
+    } {
+        const hasScheduled = Object.keys(this.notificationIntervals).length > 0;
+        const activeReminders = Object.keys(this.notificationIntervals);
+        
+        return {
+            permission: Notification.permission,
+            scheduled: hasScheduled,
+            activeReminders
+        };
+    }
+
+    // Получение информации о следующем напоминании
+    static getNextReminderInfo(reminderTime: string): { 
+        nextReminder: string;
+        timeUntilNext: number;
+    } | null {
+        if (!reminderTime) return null;
+
+        const [hours, minutes] = reminderTime.split(':').map(Number);
+        const now = new Date();
+        const reminderDate = new Date();
+        reminderDate.setHours(hours, minutes, 0, 0);
+
+        // Если время уже прошло сегодня, планируем на завтра
+        if (reminderDate <= now) {
+            reminderDate.setDate(reminderDate.getDate() + 1);
+        }
+
+        const timeUntilNext = reminderDate.getTime() - now.getTime();
+        
+        return {
+            nextReminder: reminderDate.toLocaleString('ru-RU'),
+            timeUntilNext
+        };
     }
 }
 

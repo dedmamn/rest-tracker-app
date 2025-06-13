@@ -156,6 +156,54 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
         return `${hours}:${minutes}`;
     };
 
+    const handleTestNotification = async () => {
+        try {
+            await NotificationManager.sendDailyReminder();
+            setAlertMessage({ 
+                type: 'success', 
+                message: 'Тестовое уведомление отправлено!' 
+            });
+        } catch (error) {
+            setAlertMessage({ 
+                type: 'error', 
+                message: 'Ошибка отправки уведомления. Проверьте разрешения в браузере.' 
+            });
+        }
+    };
+
+    const handleCheckNotificationStatus = () => {
+        const status = NotificationManager.getNotificationStatus();
+        const nextInfo = settings.reminderTime 
+            ? NotificationManager.getNextReminderInfo(settings.reminderTime)
+            : null;
+        
+        let message = '';
+        
+        switch (status.permission) {
+            case 'granted':
+                if (status.scheduled && nextInfo) {
+                    const hoursUntil = Math.round(nextInfo.timeUntilNext / (1000 * 60 * 60));
+                    message = `✅ Уведомления разрешены и запланированы на ${settings.reminderTime}. Следующее через ~${hoursUntil}ч`;
+                } else {
+                    message = '✅ Уведомления разрешены, но не запланированы. Сохраните настройки для активации.';
+                }
+                break;
+            case 'denied':
+                message = '❌ Уведомления заблокированы. Разрешите в настройках браузера.';
+                break;
+            case 'default':
+                message = '⚠️ Разрешение на уведомления не запрошено. Включите уведомления в настройках.';
+                break;
+        }
+        
+        console.log('📊 Статус уведомлений:', status, nextInfo);
+        
+        setAlertMessage({ 
+            type: status.permission === 'granted' ? 'success' : 'error', 
+            message 
+        });
+    };
+
     return (
         <Box sx={{ pb: 10 }}>
             {/* Заголовок */}
@@ -210,15 +258,38 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
                         />
                         
                         {settings.notificationsEnabled && (
-                            <TextField
-                                label="Время напоминаний"
-                                type="time"
-                                value={settings.reminderTime || '09:00'}
-                                onChange={(e) => handleSettingChange('reminderTime', e.target.value)}
-                                fullWidth
-                                InputLabelProps={{ shrink: true }}
-                                helperText="Время ежедневных напоминаний о запланированных активностях"
-                            />
+                            <>
+                                <TextField
+                                    label="Время напоминаний"
+                                    type="time"
+                                    value={settings.reminderTime || '09:00'}
+                                    onChange={(e) => handleSettingChange('reminderTime', e.target.value)}
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                    helperText="Время ежедневных напоминаний о запланированных активностях"
+                                    sx={{ mb: 2 }}
+                                />
+                                
+                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={handleTestNotification}
+                                        startIcon={<Notifications />}
+                                    >
+                                        Тест уведомления
+                                    </Button>
+                                    
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={handleCheckNotificationStatus}
+                                        startIcon={<Info />}
+                                    >
+                                        Статус
+                                    </Button>
+                                </Box>
+                            </>
                         )}
                     </CardContent>
                 </Card>
