@@ -38,7 +38,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     const [activityType, setActivityType] = useState<ActivityType>(
         editActivity?.type || ActivityType.PASSIVE
     );
-    const [duration, setDuration] = useState(editActivity?.duration || 30);
+    const [duration, setDuration] = useState<number | string>(editActivity?.duration || 30);
     const [hasRecurrence, setHasRecurrence] = useState(!!editActivity?.recurrence);
     const [recurrence, setRecurrence] = useState<Recurrence>(
         editActivity?.recurrence || {
@@ -74,12 +74,15 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     ];
 
     const handleSubmit = () => {
+        // Convert duration to number, defaulting to 30 if empty or invalid
+        const finalDuration = typeof duration === 'string' && duration === '' ? 30 : Number(duration);
+        
         const activity: Activity = {
             id: editActivity?.id || uuidv4(),
             name,
             description: description || undefined,
             type: activityType,
-            duration,
+            duration: finalDuration,
             recurrence: hasRecurrence ? recurrence : undefined,
             createdAt: editActivity?.createdAt || new Date(),
             completedDates: editActivity?.completedDates || [],
@@ -171,7 +174,18 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
                         label="Продолжительность (минуты)"
                         type="number"
                         value={duration}
-                        onChange={(e) => setDuration(Number(e.target.value))}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            // Allow empty values during editing
+                            if (value === '') {
+                                setDuration('');
+                            } else {
+                                const numValue = Number(value);
+                                if (!isNaN(numValue)) {
+                                    setDuration(numValue);
+                                }
+                            }
+                        }}
                         fullWidth
                         inputProps={{ min: 5, max: 480 }}
                     />
