@@ -24,6 +24,7 @@ import {
     Sort
 } from '@mui/icons-material';
 import { Activity, ActivityType } from '../types';
+import { ACTIVITY_TYPE_LABELS } from '../data/predefinedActivities';
 import ActivityCard from '../components/ActivityCard';
 import ActivityForm from '../components/ActivityForm';
 
@@ -126,15 +127,6 @@ const Activities: React.FC<ActivitiesProps> = ({ activities, setActivities }) =>
     const activeActivities = activities.filter(a => a.isActive);
     const archivedActivities = activities.filter(a => !a.isActive);
 
-    const activityTypeLabels = {
-        [ActivityType.PHYSICAL]: 'Физическая',
-        [ActivityType.MENTAL]: 'Ментальная',
-        [ActivityType.SOCIAL]: 'Социальная',
-        [ActivityType.CREATIVE]: 'Творческая',
-        [ActivityType.OUTDOOR]: 'На воздухе',
-        [ActivityType.PASSIVE]: 'Пассивная'
-    };
-
     const toggleTypeFilter = (type: ActivityType) => {
         setSelectedTypes(prev => 
             prev.includes(type) 
@@ -212,7 +204,7 @@ const Activities: React.FC<ActivitiesProps> = ({ activities, setActivities }) =>
                         {selectedTypes.map(type => (
                             <Chip
                                 key={type}
-                                label={activityTypeLabels[type]}
+                                label={ACTIVITY_TYPE_LABELS[type]}
                                 onDelete={() => toggleTypeFilter(type)}
                                 color="primary"
                                 size="small"
@@ -276,7 +268,7 @@ const Activities: React.FC<ActivitiesProps> = ({ activities, setActivities }) =>
                 <MenuItem sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
                     Фильтр по типам:
                 </MenuItem>
-                {Object.entries(activityTypeLabels).map(([type, label]) => (
+                {Object.entries(ACTIVITY_TYPE_LABELS).map(([type, label]) => (
                     <MenuItem 
                         key={type}
                         onClick={() => toggleTypeFilter(type as ActivityType)}

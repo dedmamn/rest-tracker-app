@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -15,9 +15,13 @@ import {
     Typography,
     Switch,
     FormControlLabel,
-    Grid
+    Grid,
+    Autocomplete,
+    Tabs,
+    Tab
 } from '@mui/material';
 import { Activity, ActivityType, Recurrence } from '../types';
+import { PREDEFINED_ACTIVITIES, ACTIVITY_TYPE_LABELS } from '../data/predefinedActivities';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ActivityFormProps {
@@ -36,7 +40,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     const [name, setName] = useState(editActivity?.name || '');
     const [description, setDescription] = useState(editActivity?.description || '');
     const [activityType, setActivityType] = useState<ActivityType>(
-        editActivity?.type || ActivityType.PASSIVE
+        editActivity?.type || ActivityType.PHYSICAL
     );
     const [duration, setDuration] = useState<number | string>(editActivity?.duration || 30);
     const [hasRecurrence, setHasRecurrence] = useState(!!editActivity?.recurrence);
@@ -47,15 +51,15 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
             daysOfWeek: []
         }
     );
+    const [inputMode, setInputMode] = useState<'predefined' | 'custom'>('predefined');
 
-    const activityTypeLabels = {
-        [ActivityType.PHYSICAL]: 'Физическая активность',
-        [ActivityType.MENTAL]: 'Ментальный отдых',
-        [ActivityType.SOCIAL]: 'Социальная активность',
-        [ActivityType.CREATIVE]: 'Творчество',
-        [ActivityType.OUTDOOR]: 'На свежем воздухе',
-        [ActivityType.PASSIVE]: 'Пассивный отдых'
-    };
+    // Эффект для сброса формы при изменении типа активности
+    useEffect(() => {
+        if (!editActivity && inputMode === 'predefined') {
+            setName('');
+            setDescription('');
+        }
+    }, [activityType, inputMode, editActivity]);
 
     const frequencyLabels = {
         daily: 'Ежедневно',
@@ -97,7 +101,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
         // Сброс формы
         setName('');
         setDescription('');
-        setActivityType(ActivityType.PASSIVE);
+        setActivityType(ActivityType.PHYSICAL);
         setDuration(30);
         setHasRecurrence(false);
         setRecurrence({
@@ -105,7 +109,19 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
             interval: 1,
             daysOfWeek: []
         });
+        setInputMode('predefined');
         onClose();
+    };
+
+    const handlePredefinedActivitySelect = (selectedActivity: any) => {
+        if (selectedActivity) {
+            setName(selectedActivity.name);
+            setDescription(selectedActivity.description || '');
+            setDuration(selectedActivity.duration || 30);
+        } else {
+            setName('');
+            setDescription('');
+        }
     };
 
     const toggleDayOfWeek = (day: number) => {
@@ -136,14 +152,73 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
             
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
-                    <TextField
-                        label="Название"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        fullWidth
-                        required
-                        variant="outlined"
-                    />
+                    <FormControl fullWidth>
+                        <InputLabel>Тип отдыха</InputLabel>
+                        <Select
+                            value={activityType}
+                            onChange={(e) => setActivityType(e.target.value as ActivityType)}
+                            label="Тип отдыха"
+                        >
+                            {Object.entries(ACTIVITY_TYPE_LABELS).map(([key, label]) => (
+                                <MenuItem key={key} value={key}>
+                                    {label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    {!editActivity && (
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                            <Tabs 
+                                value={inputMode} 
+                                onChange={(_, newValue) => setInputMode(newValue)}
+                                aria-label="input mode tabs"
+                            >
+                                <Tab label="Из списка" value="predefined" />
+                                <Tab label="Своя активность" value="custom" />
+                            </Tabs>
+                        </Box>
+                    )}
+
+                    {inputMode === 'predefined' && !editActivity && (
+                        <Autocomplete
+                            options={PREDEFINED_ACTIVITIES[activityType] || []}
+                            getOptionLabel={(option) => option.name}
+                            onChange={(_, value) => handlePredefinedActivitySelect(value)}
+                            value={PREDEFINED_ACTIVITIES[activityType]?.find(item => item.name === name) || null}
+                            renderInput={(params) => (
+                                <TextField 
+                                    {...params} 
+                                    label="Выберите активность"
+                                    variant="outlined"
+                                />
+                            )}
+                            renderOption={(props, option) => (
+                                <Box component="li" {...props}>
+                                    <Box>
+                                        <Typography variant="body2">{option.name}</Typography>
+                                        {option.duration && (
+                                            <Typography variant="caption" color="text.secondary">
+                                                {option.duration} мин.
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </Box>
+                            )}
+                            fullWidth
+                        />
+                    )}
+
+                    {(inputMode === 'custom' || editActivity) && (
+                        <TextField
+                            label="Название"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            fullWidth
+                            required
+                            variant="outlined"
+                        />
+                    )}
 
                     <TextField
                         label="Описание (необязательно)"
@@ -154,21 +229,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
                         rows={2}
                         variant="outlined"
                     />
-
-                    <FormControl fullWidth>
-                        <InputLabel>Тип отдыха</InputLabel>
-                        <Select
-                            value={activityType}
-                            onChange={(e) => setActivityType(e.target.value as ActivityType)}
-                            label="Тип отдыха"
-                        >
-                            {Object.entries(activityTypeLabels).map(([key, label]) => (
-                                <MenuItem key={key} value={key}>
-                                    {label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
 
                     <TextField
                         label="Продолжительность (минуты)"

@@ -1,7 +1,10 @@
 export enum ActivityType {
     PHYSICAL = 'physical',
     MENTAL = 'mental',
+    EMOTIONAL = 'emotional',
     SOCIAL = 'social',
+    SENSORY = 'sensory',
+    SPIRITUAL = 'spiritual',
     CREATIVE = 'creative',
     OUTDOOR = 'outdoor',
     PASSIVE = 'passive'
