@@ -14,6 +14,9 @@
         padding-bottom: 80px !important;
         padding-left: max(8px, env(safe-area-inset-left)) !important;
         padding-right: max(8px, env(safe-area-inset-right)) !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     /* Адаптация карточек для мобильных */

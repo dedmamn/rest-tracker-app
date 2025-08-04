@@ -106,9 +106,17 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
     };
 
     return (
-        <Box sx={{ p: 2, pb: 10 }}>
+        <Box sx={{ 
+            p: 2, 
+            pb: 10,
+            width: '100%',
+            maxWidth: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+        }}>
             {/* Приветствие */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
                     {getGreeting()}
                 </Typography>
@@ -118,55 +126,74 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
             </Box>
 
             {/* Статистика */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={4}>
-                    <Card sx={{ textAlign: 'center', py: 1 }}>
-                        <CardContent sx={{ pb: '16px !important' }}>
-                            <Avatar sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
-                                <Today fontSize="small" />
-                            </Avatar>
-                            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                                {stats.todayActivities}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Сегодня
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+            <Box sx={{ 
+                mb: 3, 
+                width: '100%', 
+                display: 'flex', 
+                justifyContent: 'center',
+                gap: 2,
+                flexWrap: 'wrap'
+            }}>
+                <Card sx={{ 
+                    textAlign: 'center', 
+                    py: 1, 
+                    flex: '1 1 calc(33.333% - 16px)',
+                    minWidth: '100px',
+                    maxWidth: '120px'
+                }}>
+                    <CardContent sx={{ pb: '16px !important' }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
+                            <Today fontSize="small" />
+                        </Avatar>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                            {stats.todayActivities}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Сегодня
+                        </Typography>
+                    </CardContent>
+                </Card>
                 
-                <Grid item xs={4}>
-                    <Card sx={{ textAlign: 'center', py: 1 }}>
-                        <CardContent sx={{ pb: '16px !important' }}>
-                            <Avatar sx={{ bgcolor: 'secondary.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
-                                <TrendingUp fontSize="small" />
-                            </Avatar>
-                            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                                {stats.weekActivities}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Неделя
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                <Card sx={{ 
+                    textAlign: 'center', 
+                    py: 1, 
+                    flex: '1 1 calc(33.333% - 16px)',
+                    minWidth: '100px',
+                    maxWidth: '120px'
+                }}>
+                    <CardContent sx={{ pb: '16px !important' }}>
+                        <Avatar sx={{ bgcolor: 'secondary.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
+                            <TrendingUp fontSize="small" />
+                        </Avatar>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                            {stats.weekActivities}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Неделя
+                        </Typography>
+                    </CardContent>
+                </Card>
                 
-                <Grid item xs={4}>
-                    <Card sx={{ textAlign: 'center', py: 1 }}>
-                        <CardContent sx={{ pb: '16px !important' }}>
-                            <Avatar sx={{ bgcolor: 'success.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
-                                <Assignment fontSize="small" />
-                            </Avatar>
-                            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                                {stats.monthActivities}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Месяц
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+                <Card sx={{ 
+                    textAlign: 'center', 
+                    py: 1, 
+                    flex: '1 1 calc(33.333% - 16px)',
+                    minWidth: '100px',
+                    maxWidth: '120px'
+                }}>
+                    <CardContent sx={{ pb: '16px !important' }}>
+                        <Avatar sx={{ bgcolor: 'success.main', mx: 'auto', mb: 1, width: 32, height: 32 }}>
+                            <Assignment fontSize="small" />
+                        </Avatar>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                            {stats.monthActivities}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Месяц
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Box>
 
             {/* Сегодняшние активности */}
             {todaysActivities.length > 0 && (
@@ -212,7 +239,14 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
 
             {/* Пустое состояние */}
             {activeActivities.length === 0 && (
-                <Card sx={{ textAlign: 'center', py: 6, mt: 4 }}>
+                <Card sx={{ 
+                    textAlign: 'center', 
+                    py: 6, 
+                    mt: 4, 
+                    width: '100%', 
+                    maxWidth: '400px',
+                    mx: 'auto'
+                }}>
                     <CardContent>
                         <Typography variant="h6" sx={{ mb: 2 }}>
                             🌟 Начните свой путь к лучшему отдыху!
