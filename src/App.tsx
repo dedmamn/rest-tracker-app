@@ -92,7 +92,14 @@ const App = () => {
                         onCreateBackup={handleCreateBackup}
                         activitiesCount={activities.length}
                     />
-                    <Container maxWidth="sm" sx={{ padding: 0 }}>
+                    <Container maxWidth="sm" sx={{ 
+                        padding: 0,
+                        margin: '0 auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        width: '100%'
+                    }}>
                         <Routes>
                             <Route 
                                 path="/" 

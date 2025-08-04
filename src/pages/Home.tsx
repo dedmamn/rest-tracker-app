@@ -106,9 +106,17 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
     };
 
     return (
-        <Box sx={{ p: 2, pb: 10 }}>
+        <Box sx={{ 
+            p: 2, 
+            pb: 10,
+            width: '100%',
+            maxWidth: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+        }}>
             {/* Приветствие */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
                     {getGreeting()}
                 </Typography>
@@ -118,7 +126,7 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
             </Box>
 
             {/* Статистика */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 3, width: '100%', justifyContent: 'center' }}>
                 <Grid item xs={4}>
                     <Card sx={{ textAlign: 'center', py: 1 }}>
                         <CardContent sx={{ pb: '16px !important' }}>
@@ -170,7 +178,7 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
 
             {/* Сегодняшние активности */}
             {todaysActivities.length > 0 && (
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, width: '100%' }}>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                         Запланировано на сегодня
                     </Typography>
@@ -191,7 +199,7 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
 
             {/* Последние активности */}
             {activeActivities.length > 0 && (
-                <Box>
+                <Box sx={{ width: '100%' }}>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                         Ваши активности
                     </Typography>
@@ -212,7 +220,7 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
 
             {/* Пустое состояние */}
             {activeActivities.length === 0 && (
-                <Card sx={{ textAlign: 'center', py: 6, mt: 4 }}>
+                <Card sx={{ textAlign: 'center', py: 6, mt: 4, width: '100%', maxWidth: '400px' }}>
                     <CardContent>
                         <Typography variant="h6" sx={{ mb: 2 }}>
                             🌟 Начните свой путь к лучшему отдыху!
