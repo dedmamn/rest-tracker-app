@@ -127,12 +127,13 @@ const Activities: React.FC<ActivitiesProps> = ({ activities, setActivities }) =>
     const archivedActivities = activities.filter(a => !a.isActive);
 
     const activityTypeLabels = {
-        [ActivityType.PHYSICAL]: 'Физическая',
-        [ActivityType.MENTAL]: 'Ментальная',
-        [ActivityType.SOCIAL]: 'Социальная',
-        [ActivityType.CREATIVE]: 'Творческая',
-        [ActivityType.OUTDOOR]: 'На воздухе',
-        [ActivityType.PASSIVE]: 'Пассивная'
+        [ActivityType.PHYSICAL]: 'Физический',
+        [ActivityType.EMOTIONAL]: 'Эмоциональный',
+        [ActivityType.MENTAL]: 'Ментальный',
+        [ActivityType.SOCIAL]: 'Социальный',
+        [ActivityType.SENSORY]: 'Сенсорный',
+        [ActivityType.SPIRITUAL]: 'Духовный',
+        [ActivityType.CREATIVE]: 'Творческий'
     };
 
     const toggleTypeFilter = (type: ActivityType) => {

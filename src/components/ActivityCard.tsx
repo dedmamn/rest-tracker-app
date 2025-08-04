@@ -15,8 +15,9 @@ import {
     Psychology,
     People,
     Brush,
-    Nature,
-    Chair,
+    Visibility,
+    SelfImprovement,
+    Create,
     PlayArrow,
     Edit,
     Delete,
@@ -40,23 +41,25 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
     const getActivityIcon = (type: ActivityType) => {
         switch (type) {
             case ActivityType.PHYSICAL: return <FitnessCenter />;
+            case ActivityType.EMOTIONAL: return <Psychology />;
             case ActivityType.MENTAL: return <Psychology />;
             case ActivityType.SOCIAL: return <People />;
-            case ActivityType.CREATIVE: return <Brush />;
-            case ActivityType.OUTDOOR: return <Nature />;
-            case ActivityType.PASSIVE: return <Chair />;
-            default: return <Chair />;
+            case ActivityType.SENSORY: return <Visibility />;
+            case ActivityType.SPIRITUAL: return <SelfImprovement />;
+            case ActivityType.CREATIVE: return <Create />;
+            default: return <FitnessCenter />;
         }
     };
 
     const getActivityTypeLabel = (type: ActivityType) => {
         switch (type) {
-            case ActivityType.PHYSICAL: return 'Физическая';
-            case ActivityType.MENTAL: return 'Ментальная';
-            case ActivityType.SOCIAL: return 'Социальная';
-            case ActivityType.CREATIVE: return 'Творческая';
-            case ActivityType.OUTDOOR: return 'На воздухе';
-            case ActivityType.PASSIVE: return 'Пассивная';
+            case ActivityType.PHYSICAL: return 'Физический';
+            case ActivityType.EMOTIONAL: return 'Эмоциональный';
+            case ActivityType.MENTAL: return 'Ментальный';
+            case ActivityType.SOCIAL: return 'Социальный';
+            case ActivityType.SENSORY: return 'Сенсорный';
+            case ActivityType.SPIRITUAL: return 'Духовный';
+            case ActivityType.CREATIVE: return 'Творческий';
             default: return 'Отдых';
         }
     };
@@ -64,11 +67,12 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
     const getActivityTypeColor = (type: ActivityType) => {
         switch (type) {
             case ActivityType.PHYSICAL: return '#FF6B6B';
+            case ActivityType.EMOTIONAL: return '#FF9F43';
             case ActivityType.MENTAL: return '#4ECDC4';
             case ActivityType.SOCIAL: return '#45B7D1';
-            case ActivityType.CREATIVE: return '#96CEB4';
-            case ActivityType.OUTDOOR: return '#FFEAA7';
-            case ActivityType.PASSIVE: return '#DDA0DD';
+            case ActivityType.SENSORY: return '#A55EEA';
+            case ActivityType.SPIRITUAL: return '#6C5CE7';
+            case ActivityType.CREATIVE: return '#26DE81';
             default: return '#95A5A6';
         }
     };

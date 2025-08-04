@@ -1,10 +1,11 @@
 export enum ActivityType {
     PHYSICAL = 'physical',
+    EMOTIONAL = 'emotional',
     MENTAL = 'mental',
     SOCIAL = 'social',
-    CREATIVE = 'creative',
-    OUTDOOR = 'outdoor',
-    PASSIVE = 'passive'
+    SENSORY = 'sensory',
+    SPIRITUAL = 'spiritual',
+    CREATIVE = 'creative'
 }
 
 export interface Activity {
