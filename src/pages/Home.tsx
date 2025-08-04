@@ -24,14 +24,32 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     const handleCompleteActivity = (activityId: string) => {
-        setActivities(prev => prev.map(activity => 
-            activity.id === activityId 
-                ? {
+        setActivities(prev => prev.map(activity => {
+            if (activity.id !== activityId) return activity;
+            
+            const today = new Date();
+            const isCompletedToday = activity.completedDates.some(date => {
+                const completedDate = new Date(date);
+                return completedDate.toDateString() === today.toDateString();
+            });
+            
+            if (isCompletedToday) {
+                // Remove today's completion
+                return {
                     ...activity,
-                    completedDates: [...activity.completedDates, new Date()]
-                }
-                : activity
-        ));
+                    completedDates: activity.completedDates.filter(date => {
+                        const completedDate = new Date(date);
+                        return completedDate.toDateString() !== today.toDateString();
+                    })
+                };
+            } else {
+                // Add today's completion
+                return {
+                    ...activity,
+                    completedDates: [...activity.completedDates, today]
+                };
+            }
+        }));
     };
 
     const handleEditActivity = (updatedActivity: Activity) => {

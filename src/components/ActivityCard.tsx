@@ -233,20 +233,15 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-                <Tooltip title="Выполнить активность">
+                <Tooltip title={isCompletedToday ? "Отменить выполнение" : "Выполнить активность"}>
                     <IconButton 
                         color="primary" 
                         onClick={() => onComplete(activity.id)}
-                        disabled={isCompletedToday}
                         sx={{ 
-                            backgroundColor: 'primary.main',
+                            backgroundColor: isCompletedToday ? 'success.light' : 'primary.main',
                             color: 'white',
                             '&:hover': {
-                                backgroundColor: 'primary.dark'
-                            },
-                            '&:disabled': {
-                                backgroundColor: 'success.light',
-                                color: 'white'
+                                backgroundColor: isCompletedToday ? 'success.main' : 'primary.dark'
                             }
                         }}
                     >
