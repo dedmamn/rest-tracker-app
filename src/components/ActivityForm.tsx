@@ -36,7 +36,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     const [name, setName] = useState(editActivity?.name || '');
     const [description, setDescription] = useState(editActivity?.description || '');
     const [activityType, setActivityType] = useState<ActivityType>(
-        editActivity?.type || ActivityType.PASSIVE
+        editActivity?.type || ActivityType.PHYSICAL
     );
     const [duration, setDuration] = useState<number | string>(editActivity?.duration || 30);
     const [hasRecurrence, setHasRecurrence] = useState(!!editActivity?.recurrence);
@@ -49,12 +49,13 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     );
 
     const activityTypeLabels = {
-        [ActivityType.PHYSICAL]: 'Физическая активность',
+        [ActivityType.PHYSICAL]: 'Физический отдых',
+        [ActivityType.EMOTIONAL]: 'Эмоциональный отдых',
         [ActivityType.MENTAL]: 'Ментальный отдых',
-        [ActivityType.SOCIAL]: 'Социальная активность',
-        [ActivityType.CREATIVE]: 'Творчество',
-        [ActivityType.OUTDOOR]: 'На свежем воздухе',
-        [ActivityType.PASSIVE]: 'Пассивный отдых'
+        [ActivityType.SOCIAL]: 'Социальный отдых',
+        [ActivityType.SENSORY]: 'Сенсорный отдых',
+        [ActivityType.SPIRITUAL]: 'Духовный отдых',
+        [ActivityType.CREATIVE]: 'Творческий отдых'
     };
 
     const frequencyLabels = {
@@ -97,7 +98,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
         // Сброс формы
         setName('');
         setDescription('');
-        setActivityType(ActivityType.PASSIVE);
+        setActivityType(ActivityType.PHYSICAL);
         setDuration(30);
         setHasRecurrence(false);
         setRecurrence({
