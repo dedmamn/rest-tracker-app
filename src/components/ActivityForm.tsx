@@ -102,6 +102,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
         setName('');
         setDescription('');
         setActivityType(ActivityType.PHYSICAL);
+        setActivityType(ActivityType.PHYSICAL);
         setDuration(30);
         setHasRecurrence(false);
         setRecurrence({
