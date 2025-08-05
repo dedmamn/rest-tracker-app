@@ -34,6 +34,7 @@ export interface Settings {
     theme: 'light' | 'dark';
     defaultActivityDuration: number;
     reminderTime?: string; // время напоминания в формате HH:MM
+    testSettings: TestSettings;
 }
 
 export interface CompletedActivity {
@@ -41,4 +42,52 @@ export interface CompletedActivity {
     completedAt: Date;
     duration?: number;
     notes?: string;
+}
+
+// Типы для теста усталости
+export interface TestQuestion {
+    id: number;
+    block: 'A' | 'B' | 'C' | 'D' | 'E';
+    blockName: string;
+    text: string;
+}
+
+export interface TestAnswer {
+    questionId: number;
+    score: number; // 0-5
+}
+
+export interface TestResult {
+    id: string;
+    completedAt: Date;
+    answers: TestAnswer[];
+    fatigueScores: FatigueScores;
+    dominantTypes: FatigueType[];
+}
+
+export interface FatigueScores {
+    physical: number;
+    emotional: number;
+    cognitive: number;
+    social: number;
+    achievement: number;
+    caregiving: number;
+    anxiety: number;
+    hormonal: number;
+    chronicFatigue: number;
+}
+
+export interface FatigueType {
+    type: keyof FatigueScores;
+    name: string;
+    score: number;
+    description: string;
+    solutions: string;
+    restActivities: string[];
+}
+
+export interface TestSettings {
+    hasCompletedFirstTest: boolean;
+    showTestReminderPopup: boolean;
+    testHistory: TestResult[];
 }

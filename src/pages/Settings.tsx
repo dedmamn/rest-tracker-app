@@ -40,7 +40,7 @@ import {
     Storage,
     Backup
 } from '@mui/icons-material';
-import { Settings as SettingsType, Activity } from '../types';
+import { Settings as SettingsType, Activity, TestResult } from '../types';
 import { StorageManager } from '../utils/storage';
 import { DataFormatter, NotificationManager } from '../utils/helpers';
 import PWAInstall from '../components/PWAInstall';
@@ -50,9 +50,20 @@ interface SettingsProps {
     setSettings: React.Dispatch<React.SetStateAction<SettingsType>>;
     activities?: Activity[];
     setActivities?: React.Dispatch<React.SetStateAction<Activity[]>>;
+    testHistory?: TestResult[];
+    onOpenTest?: () => void;
+    onOpenTestResult?: (result: TestResult) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities = [], setActivities }) => {
+const Settings: React.FC<SettingsProps> = ({ 
+    settings, 
+    setSettings, 
+    activities = [], 
+    setActivities,
+    testHistory = [],
+    onOpenTest,
+    onOpenTestResult
+}) => {
     const [exportDialogOpen, setExportDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -116,7 +127,12 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
             notificationsEnabled: true,
             theme: 'light',
             defaultActivityDuration: 30,
-            reminderTime: '09:00'
+            reminderTime: '09:00',
+            testSettings: {
+                hasCompletedFirstTest: false,
+                showTestReminderPopup: true,
+                testHistory: []
+            }
         });
         setDeleteDialogOpen(false);
         setStorageInfo(StorageManager.getStorageInfo());
