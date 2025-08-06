@@ -7,10 +7,12 @@ import {
     Card,
     CardContent,
     LinearProgress,
-    Avatar
+    Avatar,
+    Button,
+    IconButton
 } from '@mui/material';
-import { Add, TrendingUp, Today, Assignment } from '@mui/icons-material';
-import { Activity, Settings as SettingsType } from '../types';
+import { Add, TrendingUp, Today, Assignment, Psychology } from '@mui/icons-material';
+import { Activity, Settings as SettingsType, TestResult } from '../types';
 import ActivityCard from '../components/ActivityCard';
 import ActivityForm from '../components/ActivityForm';
 
@@ -18,9 +20,17 @@ interface HomeProps {
     activities: Activity[];
     setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
     settings: SettingsType;
+    onOpenTest?: () => void;
+    testHistory?: TestResult[];
 }
 
-const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
+const Home: React.FC<HomeProps> = ({ 
+    activities, 
+    setActivities, 
+    settings, 
+    onOpenTest,
+    testHistory = []
+}) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     const handleCompleteActivity = (activityId: string) => {
@@ -133,14 +143,50 @@ const Home: React.FC<HomeProps> = ({ activities, setActivities, settings }) => {
             flexDirection: 'column',
             alignItems: 'center'
         }}>
-            {/* Приветствие */}
-            <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
-                    {getGreeting()}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Время позаботиться о своем отдыхе
-                </Typography>
+            {/* Приветствие с кнопкой теста */}
+            <Box sx={{ mb: 3, width: '100%' }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'flex-start',
+                    mb: 1
+                }}>
+                    <Box sx={{ textAlign: 'left', flexGrow: 1 }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+                            {getGreeting()}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            Время позаботиться о своем отдыхе
+                        </Typography>
+                    </Box>
+                    
+                    {onOpenTest && (
+                        <Box sx={{ ml: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <IconButton 
+                                onClick={onOpenTest}
+                                sx={{ 
+                                    bgcolor: 'primary.main',
+                                    color: 'white',
+                                    '&:hover': {
+                                        bgcolor: 'primary.dark'
+                                    },
+                                    mb: 0.5
+                                }}
+                                size="large"
+                            >
+                                <Psychology />
+                            </IconButton>
+                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
+                                Пройти<br/>тест
+                            </Typography>
+                            {testHistory.length > 0 && (
+                                <Typography variant="caption" color="primary" sx={{ mt: 0.5 }}>
+                                    {testHistory.length}
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
+                </Box>
             </Box>
 
             {/* Статистика */}

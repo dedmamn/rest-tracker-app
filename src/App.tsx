@@ -7,7 +7,11 @@ import Activities from './pages/Activities';
 import Settings from './pages/Settings';
 import Navigation from './components/Navigation';
 import BackupReminder from './components/BackupReminder';
+import TestModal from './components/TestModal';
+import TestResults from './components/TestResults';
+import FirstTimeTestPopup from './components/FirstTimeTestPopup';
 import { useDataManager } from './hooks/useDataManager';
+import { useTestManager } from './hooks/useTestManager';
 import { useNotifications } from './hooks/useNotifications';
 import { testLocalStorage, debugLocalStorage } from './utils/storageTest';
 import './styles/global.css';
@@ -19,11 +23,28 @@ const App = () => {
         settings,
         setActivities,
         setSettings,
+        addActivity,
         createBackup
     } = useDataManager();
 
     // Инициализация системы уведомлений
     const { sendTestNotification, getNotificationStatus, clearNotifications } = useNotifications({ settings });
+
+    // Инициализация системы тестов
+    const {
+        isTestModalOpen,
+        isResultsModalOpen,
+        currentTestResult,
+        testHistory,
+        shouldShowFirstTimePopup,
+        openTestModal,
+        closeTestModal,
+        openResultsModal,
+        closeResultsModal,
+        completeTest,
+        markFirstTestCompleted,
+        addRecommendedActivities
+    } = useTestManager({ settings, setSettings, addActivity });
 
     const theme = createTheme({
         palette: {
@@ -79,6 +100,15 @@ const App = () => {
         createBackup();
     };
 
+    const handleStartFirstTest = () => {
+        markFirstTestCompleted();
+        openTestModal();
+    };
+
+    const handleSkipFirstTest = () => {
+        markFirstTestCompleted();
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
@@ -106,6 +136,8 @@ const App = () => {
                                         activities={activities} 
                                         setActivities={setActivities}
                                         settings={settings}
+                                        onOpenTest={openTestModal}
+                                        testHistory={testHistory}
                                     />
                                 } 
                             />
@@ -126,12 +158,37 @@ const App = () => {
                                         setSettings={setSettings}
                                         activities={activities}
                                         setActivities={setActivities}
+                                        testHistory={testHistory}
+                                        onOpenTest={openTestModal}
+                                        onOpenTestResult={openResultsModal}
                                     />
                                 } 
                             />
                         </Routes>
                     </Container>
                     <Navigation />
+                    
+                    {/* Модальные окна тестов */}
+                    <FirstTimeTestPopup 
+                        open={shouldShowFirstTimePopup}
+                        onStartTest={handleStartFirstTest}
+                        onSkip={handleSkipFirstTest}
+                    />
+                    
+                    <TestModal 
+                        open={isTestModalOpen}
+                        onClose={closeTestModal}
+                        onComplete={completeTest}
+                    />
+                    
+                    {currentTestResult && (
+                        <TestResults 
+                            open={isResultsModalOpen}
+                            onClose={closeResultsModal}
+                            testResult={currentTestResult}
+                            onAddActivitiesToCalendar={addRecommendedActivities}
+                        />
+                    )}
                 </Box>
             </Router>
         </ThemeProvider>

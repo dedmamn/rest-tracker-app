@@ -38,11 +38,15 @@ import {
     DeleteForever,
     Info,
     Storage,
-    Backup
+    Backup,
+    Psychology,
+    History,
+    CheckCircle
 } from '@mui/icons-material';
-import { Settings as SettingsType, Activity } from '../types';
+import { Settings as SettingsType, Activity, TestResult } from '../types';
 import { StorageManager } from '../utils/storage';
 import { DataFormatter, NotificationManager } from '../utils/helpers';
+import { formatTestDate } from '../utils/testUtils';
 import PWAInstall from '../components/PWAInstall';
 
 interface SettingsProps {
@@ -50,9 +54,20 @@ interface SettingsProps {
     setSettings: React.Dispatch<React.SetStateAction<SettingsType>>;
     activities?: Activity[];
     setActivities?: React.Dispatch<React.SetStateAction<Activity[]>>;
+    testHistory?: TestResult[];
+    onOpenTest?: () => void;
+    onOpenTestResult?: (result: TestResult) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities = [], setActivities }) => {
+const Settings: React.FC<SettingsProps> = ({ 
+    settings, 
+    setSettings, 
+    activities = [], 
+    setActivities,
+    testHistory = [],
+    onOpenTest,
+    onOpenTestResult
+}) => {
     const [exportDialogOpen, setExportDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -116,7 +131,12 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
             notificationsEnabled: true,
             theme: 'light',
             defaultActivityDuration: 30,
-            reminderTime: '09:00'
+            reminderTime: '09:00',
+            testSettings: {
+                hasCompletedFirstTest: false,
+                showTestReminderPopup: true,
+                testHistory: []
+            }
         });
         setDeleteDialogOpen(false);
         setStorageInfo(StorageManager.getStorageInfo());
@@ -450,6 +470,80 @@ const Settings: React.FC<SettingsProps> = ({ settings, setSettings, activities =
                         </List>
                     </CardContent>
                 </Card>
+
+                {/* История тестов на усталость */}
+                {testHistory && testHistory.length > 0 && (
+                    <Card sx={{ mb: 2 }}>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Psychology color="primary" />
+                                История тестов на усталость
+                            </Typography>
+
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Пройдено тестов: {testHistory.length}
+                            </Typography>
+
+                            <List>
+                                {onOpenTest && (
+                                    <ListItem 
+                                        button 
+                                        onClick={onOpenTest}
+                                        sx={{ 
+                                            borderRadius: 2, 
+                                            mb: 1,
+                                            bgcolor: 'primary.light',
+                                            '&:hover': { bgcolor: 'primary.main' }
+                                        }}
+                                    >
+                                        <ListItemIcon>
+                                            <Psychology color="primary" />
+                                        </ListItemIcon>
+                                        <ListItemText 
+                                            primary="Пройти тест заново"
+                                            secondary="Определить текущие типы усталости"
+                                        />
+                                    </ListItem>
+                                )}
+
+                                {testHistory.slice(0, 3).map((result, index) => (
+                                    <ListItem 
+                                        key={result.id}
+                                        button 
+                                        onClick={() => onOpenTestResult?.(result)}
+                                        sx={{ borderRadius: 2, mb: 1 }}
+                                    >
+                                        <ListItemIcon>
+                                            <History color="action" />
+                                        </ListItemIcon>
+                                        <ListItemText 
+                                            primary={`Тест от ${new Intl.DateTimeFormat('ru-RU', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }).format(new Date(result.completedAt))}`}
+                                            secondary={
+                                                result.dominantTypes.length > 0 
+                                                    ? `Доминирующие типы: ${result.dominantTypes.slice(0, 2).map(t => t.name).join(', ')}`
+                                                    : 'Без значимых типов усталости'
+                                            }
+                                        />
+                                        {result.dominantTypes.length > 0 && (
+                                            <CheckCircle color="success" />
+                                        )}
+                                    </ListItem>
+                                ))}
+
+                                {testHistory.length > 3 && (
+                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                                        И еще {testHistory.length - 3} результатов...
+                                    </Typography>
+                                )}
+                            </List>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* PWA функции */}
                 <Card sx={{ mb: 2 }}>

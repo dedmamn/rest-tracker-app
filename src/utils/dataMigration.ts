@@ -155,7 +155,12 @@ export class DataMigration {
             notificationsEnabled: true,
             theme: 'light',
             defaultActivityDuration: 30,
-            reminderTime: '09:00'
+            reminderTime: '09:00',
+            testSettings: {
+                hasCompletedFirstTest: false,
+                showTestReminderPopup: true,
+                testHistory: []
+            }
         };
     }
 
