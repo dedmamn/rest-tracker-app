@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { FatigueType, TestResult, Activity } from '../types';
 import { getScoreInterpretation, shouldShowMedicalWarning, formatTestDate } from '../utils/testUtils';
+import { getActivityTypeByName } from '../utils/helpers';
 
 interface TestResultsProps {
     open: boolean;

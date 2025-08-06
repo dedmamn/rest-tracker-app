@@ -1,6 +1,9 @@
 import { TestAnswer, FatigueScores, FatigueType, TestResult } from '../types';
 import { fatigueTypeQuestions, fatigueTypeDescriptions } from '../data/testData';
 
+// Константы для интерпретации результатов теста
+const MODERATE_FATIGUE_THRESHOLD = 11;
+
 export const calculateFatigueScores = (answers: TestAnswer[]): FatigueScores => {
     const scores: FatigueScores = {
         physical: 0,

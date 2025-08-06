@@ -73,17 +73,6 @@ const TestModal: React.FC<TestModalProps> = ({ open, onClose, onComplete, showWa
         return getCurrentAnswer() !== undefined;
     };
 
-    const handleNext = () => {
-        if (currentQuestionIndex < shuffledQuestions.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
-        } else {
-            // Проверяем, что все вопросы отвечены
-            const allAnswered = shuffledQuestions.every(q => 
-                answers.some(a => a.questionId === q.id)
-            );
-            
-            if (allAnswered) {
-                onComplete(answers);
     const areAllQuestionsAnswered = (questions: TestQuestion[], answers: TestAnswer[]): boolean => {
         return questions.every(q => answers.some(a => a.questionId === q.id));
     };

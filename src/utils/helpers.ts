@@ -1,4 +1,6 @@
 // Утилиты для работы с уведомлениями и PWA
+import { ActivityType } from '../types';
+import { PREDEFINED_ACTIVITIES } from '../data/predefinedActivities';
 
 export const formatDate = (date: Date): string => {
     return date.toLocaleDateString('ru-RU', {
@@ -10,6 +12,18 @@ export const formatDate = (date: Date): string => {
 
 export const validateActivityInput = (name: string, description: string): boolean => {
     return name.trim().length > 0 && description.trim().length > 0;
+};
+
+export const getActivityTypeByName = (activityName: string): ActivityType => {
+    // Поиск активности в предопределенных активностях
+    for (const [type, activities] of Object.entries(PREDEFINED_ACTIVITIES)) {
+        if (activities.some(activity => activity.name === activityName)) {
+            return type as ActivityType;
+        }
+    }
+    
+    // Если не найдено, возвращаем значение по умолчанию
+    return ActivityType.PASSIVE;
 };
 
 export const generateRecurrenceOptions = (frequency: string): string[] => {
