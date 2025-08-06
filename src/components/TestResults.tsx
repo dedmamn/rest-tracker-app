@@ -72,7 +72,7 @@ const TestResults: React.FC<TestResultsProps> = ({
             type.restActivities.slice(0, 3).map(activityName => ({
                 name: activityName,
                 description: `Рекомендовано для восстановления от ${type.name.toLowerCase()}`,
-                type: 'physical' as any, // Можно сделать более умный выбор типа
+                type: getActivityTypeByName(activityName),
                 duration: 30,
                 isActive: true,
                 createdAt: new Date(),
