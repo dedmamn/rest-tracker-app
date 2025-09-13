@@ -9,6 +9,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm test` - запуск тестов
 - `npm run eject` - извлечение конфигурации (необратимо)
 
+## Развертывание
+
+- **GitHub Actions**: `.github/workflows/deploy.yml` - автоматическое развертывание на GitHub Pages
+- **CI/CD**: Запускается при push в main/master ветки
+- **Сборка**: Node.js 18, использует `npm ci` для чистой установки зависимостей
+
 ## Архитектура приложения
 
 ### PWA (Progressive Web App)
@@ -25,28 +31,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Структура данных
 Основные типы в `src/types/index.ts`:
-- `Activity` - активности отдыха с типами (physical, mental, social, creative, outdoor, passive)
+- `Activity` - активности отдыха с типами (physical, emotional, mental, social, sensory, spiritual, creative, outdoor, passive)
 - `Settings` - настройки приложения (тема, уведомления, время напоминаний)
 - `Recurrence` - система повторяющихся активностей
+- **Новое**: `TestResult`, `FatigueScores` - система тестирования усталости
 
 ### Система хранения данных
 - **Основное хранилище**: `StorageManager` в `utils/storage.ts`
 - **Расширенное хранилище**: `EnhancedStorage` в `utils/enhancedStorage.ts`
 - **Автоматическая миграция**: `DataMigration` в `utils/dataMigration.ts`
-- Префикс ключей: "rest-tracker-"
+- Префикс ключей: "rest-tracker-data" и "rest-tracker-backup"
 - Поддержка экспорта/импорта данных в JSON
+- Умное резервное копирование (вечернее, раз в день)
 
 ### Управление состоянием
-Центральный хук `useDataManager` в `hooks/useDataManager.ts` управляет:
-- Загрузкой/сохранением данных
-- CRUD операциями с активностями
-- Настройками приложения
-- Автоматическими бэкапами
+Центральные хуки управляют данными:
+- **`useDataManager`** в `hooks/useDataManager.ts` - основные данные и активности
+- **`useTestManager`** в `hooks/useTestManager.ts` - система тестирования усталости
+- **`useNotifications`** в `hooks/useNotifications.ts` - уведомления и напоминания
+- **`usePWA`** в `hooks/usePWA.ts` - PWA функциональность
 
-### Система уведомлений
-- Хук `useNotifications` для web-уведомлений
-- Планированные напоминания об активностях
-- Настройки времени напоминаний в Settings
+### Система тестирования усталости
+- **TestModal** - интерактивный тест с перемешанными вопросами
+- **TestResults** - анализ и визуализация результатов
+- **FirstTimeTestPopup** - попап для первого прохождения теста
+- Система подсчета баллов по 9 типам усталости
+- История результатов тестов в настройках
+
+### Компоненты PWA
+- **PWAInstall/PWAInstallPrompt** - установка приложения
+- **OfflineNotification** - уведомление о работе офлайн
+- **PWADebug/PWADiagnostic/PWAQuickTest** - диагностика PWA
+- **BackupReminder** - напоминания о резервном копировании
 
 ### Адаптивный дизайн
 - Mobile-first подход
@@ -55,9 +71,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Поддержка темной/светлой темы
 
 ### Страницы
-- `Home` - главная страница с добавлением активностей
-- `Activities` - список всех активностей
-- `Settings` - настройки приложения и экспорт/импорт данных
+- `Home` - главная страница с добавлением активностей и тестом усталости
+- `Activities` - список всех активностей с фильтрацией
+- `Settings` - настройки приложения, экспорт/импорт данных, история тестов
 
 ## Особенности разработки
 
@@ -66,15 +82,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Router настроен с basename="/rest-tracker-app"
 - Все пути в manifest.json используют этот префикс
 
+### Система миграции данных
+- **DataMigration** класс автоматически мигрирует данные из старых ключей localStorage
+- Поддержка миграции из ключей: `restTracker`, `rest-tracker-activities`, `rest-tracker-settings`
+- Выбор лучших данных по алгоритму подсчета очков
+- Автоматическая очистка старых ключей после миграции
+
 ### Отладка и тестирование
 - Автоматическое тестирование localStorage при запуске в dev-режиме
 - PWA компоненты для диагностики: PWADebug, PWADiagnostic, PWAQuickTest
 - Функции `testLocalStorage` и `debugLocalStorage` в `utils/storageTest.ts`
 
-### Система миграции данных
-При первом запуске проверяется наличие старых данных и выполняется автоматическая миграция.
-
 ### Тематизация
 - Material-UI ThemeProvider с динамическим переключением темы
 - Обновление meta theme-color в зависимости от выбранной темы
 - CSS переменные для кастомных стилей
+
+### Управление тестами усталости
+- Перемешивание вопросов при каждом прохождении
+- Валидация ответов и проверка завершенности
+- Система предупреждений при прерывании теста
+- Сохранение истории результатов в localStorage
