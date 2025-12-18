@@ -1,0 +1,64 @@
+name: Question or Discussion
+description: Ask a question or start a discussion about the Rest Tracker App
+title: "[Question]: "
+labels: ["question"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? Want to discuss something? You're in the right place!
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know or discuss?
+      placeholder: I'm wondering about...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - General Usage
+        - Installation/Setup
+        - PWA Features
+        - Data Export/Import
+        - Activity Types
+        - Fatigue Testing
+        - Technical Implementation
+        - Contributing
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Provide any additional context that might help answer your question.
+      placeholder: I've tried... I'm using...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I've checked existing issues and discussions
+          required: true
+        - label: I've read the documentation (README, CONTRIBUTING)
+          required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
