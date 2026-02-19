@@ -112,7 +112,7 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Router basename="/rest-tracker-app">
+            <Router basename={process.env.NODE_ENV === 'production' ? "/rest-tracker-app" : ""}>
                 <Box sx={{ 
                     minHeight: '100vh',
                     backgroundColor: theme.palette.background.default,
@@ -122,15 +122,29 @@ const App = () => {
                         onCreateBackup={handleCreateBackup}
                         activitiesCount={activities.length}
                     />
-                    <Container maxWidth="sm" sx={{ 
+                    <Container maxWidth="sm" sx={{
                         padding: 0,
+                        margin: '0 auto',
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        width: '100%'
                     }}>
                         <Routes>
                             <Route 
                                 path="/" 
+                                element={
+                                    <Home 
+                                        activities={activities} 
+                                        setActivities={setActivities}
+                                        settings={settings}
+                                        onOpenTest={openTestModal}
+                                        testHistory={testHistory}
+                                    />
+                                } 
+                            />
+                            <Route 
+                                path="/rest-tracker-app" 
                                 element={
                                     <Home 
                                         activities={activities} 

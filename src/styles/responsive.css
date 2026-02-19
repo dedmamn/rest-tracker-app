@@ -11,12 +11,13 @@
 @media (max-width: 959px) {
     /* Корректировки для фиксированной навигации */
     .MuiContainer-root {
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
         padding-bottom: 80px !important;
         padding-left: max(8px, env(safe-area-inset-left)) !important;
         padding-right: max(8px, env(safe-area-inset-right)) !important;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
     /* Адаптация карточек для мобильных */

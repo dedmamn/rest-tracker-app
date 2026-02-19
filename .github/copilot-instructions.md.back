@@ -1,0 +1,191 @@
+# Rest Tracker App - Copilot Instructions
+
+## Project Overview
+
+A Progressive Web App (PWA) for tracking leisure activities with offline support, built with React 18 + TypeScript. Deployed to GitHub Pages at `/rest-tracker-app/` with Russian UI.
+
+## Architecture & Key Patterns
+
+### PWA Configuration (Critical)
+
+- **Base path**: Always use `/rest-tracker-app/` prefix for production
+- **Router**: `BrowserRouter` with dynamic basename: `process.env.NODE_ENV === 'production' ? "/rest-tracker-app" : ""`
+- **Service Worker**: `public/service-worker.js` uses `BASE_PATH = '/rest-tracker-app'` for cache URLs
+- **Manifest**: All URLs in `manifest.json` must include `/rest-tracker-app/` prefix
+- Theme color updates dynamically via `<meta name="theme-color">` based on light/dark mode
+
+### State Management via Custom Hooks
+
+Four specialized hooks manage all application state (no Redux/Context):
+
+1. **`useDataManager`** (`hooks/useDataManager.ts`) - Core data operations
+
+   - Manages activities & settings with auto-save to localStorage
+   - Implements smart backup (once daily, evening hours)
+   - Auto-migrates legacy data from old storage keys on first load
+   - Pattern: `const { activities, addActivity, updateActivity, exportData } = useDataManager()`
+
+2. **`useTestManager`** (`hooks/useTestManager.ts`) - Fatigue testing system
+
+   - Controls test modals, results display, history tracking
+   - Auto-generates activity recommendations based on test scores
+   - Pattern: `const { openTestModal, completeTest, testHistory } = useTestManager({ settings, setSettings, addActivity })`
+
+3. **`useNotifications`** - Reminder system with daily scheduling
+4. **`usePWA`** - Installation prompts and offline detection
+
+### Storage Architecture
+
+**Three-layer storage system:**
+
+1. **`EnhancedStorage`** (`utils/enhancedStorage.ts`) - Base layer
+
+   - Prefix-based key management: `rest-tracker-{key}`
+   - Wraps data with metadata: `{ data, timestamp, version: '1.0.0' }`
+   - Methods: `save()`, `load<T>()`, `remove()`, `clear()`, `export()`
+
+2. **`StorageManager`** (`utils/storage.ts`) - Application layer
+
+   - Static class with predefined keys: `data`, `backup`, `migrations`
+   - `saveData(activities, settings)` - Main persistence method
+   - `createSmartBackup()` - Auto-backup logic (once per day, 18:00-23:59)
+   - `loadData()` returns `{ activities: Activity[]; settings: Settings } | null`
+
+3. **`DataMigration`** (`utils/dataMigration.ts`) - Migration layer
+   - Detects legacy keys: `restTracker`, `rest-tracker-activities`, etc.
+   - Scores data quality (activity count, valid dates) and selects best source
+   - Auto-executes on first load if new storage is empty
+   - Call `DataMigration.hasOldData()` before migration attempts
+
+**Critical:** Always use `StorageManager` for app data, never directly access localStorage with app keys.
+
+### Type System (`src/types/index.ts`)
+
+**Core types:**
+
+- `Activity` - Has `type: ActivityType` (9 enum values), `completedDates: Date[]`, `recurrence?: Recurrence`
+- `Settings` - Contains `theme: 'light' | 'dark'`, `testSettings: TestSettings`
+- `TestResult` - Fatigue test with `scores: FatigueScores` (9 fatigue dimensions), `recommendations: ActivityType[]`
+- `ActivityType` enum - 9 values: physical, emotional, mental, social, sensory, spiritual, creative, outdoor, passive
+
+**Important:** Always deserialize dates when loading from localStorage: `new Date(dateString)`
+
+### Component Patterns
+
+**Activity Management:**
+
+- `ActivityCard` - Displays individual activity with completion tracking
+- `ActivityForm` - Uses MUI form controls, validates with `validateActivityInput()` from `utils/helpers.ts`
+- Both use `ActivityType` enum for type selection dropdown
+
+**Test System:**
+
+- `TestModal` - Shuffles questions each run, tracks answers in state, validates completion before submit
+- `TestResults` - Charts fatigue scores, generates activity recommendations, allows adding recommended activities
+- `FirstTimeTestPopup` - Shows once on first app launch if `settings.testSettings.hasCompletedFirstTest === false`
+
+**Layout:**
+
+- `Navigation` - Bottom navigation for mobile (uses MUI `BottomNavigation`)
+- All pages use `Container maxWidth="sm"` for consistent mobile-first design
+
+## Development Workflows
+
+### Running the App
+
+```bash
+npm start              # Dev server with sourcemaps disabled
+npm run build          # Production build (deployed to GitHub Pages)
+npm test               # Jest test runner in watch mode
+```
+
+### Deployment
+
+- **Automatic**: Push to `main`/`master` triggers `.github/workflows/deploy.yml`
+- **CI/CD**: Node 18, `npm ci` for clean install, `CI=false` to ignore warnings
+- **Output**: Deploys `build/` folder to GitHub Pages
+
+### Testing Storage
+
+In development mode, `App.tsx` auto-runs storage diagnostics:
+
+```typescript
+testLocalStorage(); // Tests quota, read/write
+debugLocalStorage(); // Logs all app keys
+```
+
+### PWA Development
+
+- **Local testing**: Service worker only works over HTTPS or localhost
+- **Cache updates**: Increment `CACHE_NAME` in `service-worker.js` (e.g., `rest-tracker-v3`)
+- **Debug**: Open DevTools > Application > Service Workers / Cache Storage
+
+## Project Conventions
+
+### File Organization
+
+- **Hooks** (`hooks/`) - All state management, no inline useState in pages
+- **Utils** (`utils/`) - Static utility classes (StorageManager, DataMigration, NotificationManager, PWAManager, DataFormatter)
+- **Types** (`types/index.ts`) - Single source of truth for all interfaces/enums
+- **Data** (`data/`) - Static data like `predefinedActivities.ts`, `testData.ts`
+
+### Styling Approach
+
+- **Primary**: MUI `ThemeProvider` with theme switching based on `settings.theme`
+- **Global CSS**: `styles/global.css` - Base styles and CSS variables
+- **Responsive**: `styles/responsive.css` - Media queries for mobile/tablet/desktop
+- **Mobile fixes**: `styles/mobile-fixes.css` - iOS Safari specific hacks
+- **PWA styles**: `styles/pwa.css` - Install prompt and offline banner styles
+
+### Code Style
+
+- **Interfaces over types** for data models
+- **Enums** for fixed value sets (ActivityType, frequency)
+- **Hooks** must return typed interfaces (e.g., `UseDataManagerReturn`)
+- **Callbacks**: Use `useCallback` for functions passed to child components
+- **Date handling**: Always serialize as ISO strings for storage, deserialize to Date objects
+
+### Naming Conventions
+
+- Components: PascalCase (`ActivityCard.tsx`)
+- Hooks: camelCase with `use` prefix (`useDataManager.ts`)
+- Utils: PascalCase classes (`StorageManager`, `DataMigration`)
+- Constants: SCREAMING_SNAKE_CASE (`OLD_KEYS`, `CACHE_NAME`)
+- localStorage keys: kebab-case with prefix (`rest-tracker-data`)
+
+## Common Tasks
+
+### Adding a New Activity Type
+
+1. Add enum value to `ActivityType` in `types/index.ts`
+2. Update `predefinedActivities.ts` with sample activities
+3. Add icon/color mapping in components using activity types
+
+### Modifying Storage Schema
+
+1. Update interfaces in `types/index.ts`
+2. Increment version in `EnhancedStorage` (currently `1.0.0`)
+3. Add migration logic to `DataMigration` if breaking changes
+4. Test with `testLocalStorage()` in development
+
+### Adding Test Questions
+
+1. Update `testData.ts` with new questions
+2. Questions use blocks A-E, each mapped to specific fatigue dimensions
+3. Scoring logic in `utils/testUtils.ts` - each answer contributes to fatigue score
+
+### PWA Updates
+
+1. Modify `service-worker.js` cache strategy or URLs
+2. Update `manifest.json` for shortcuts, icons, or metadata
+3. Test with `usePWA` hook for installation and offline detection
+4. Remember: All URLs need `/rest-tracker-app/` prefix in production
+
+## Critical Gotchas
+
+1. **Basename mismatches** break routing in production - always check `process.env.NODE_ENV`
+2. **Date serialization** - localStorage stores strings, must convert back to Date objects
+3. **Service worker caching** - Old SW can persist; clear cache or increment `CACHE_NAME`
+4. **Theme updates** - Must update both MUI theme AND meta tag for native UI integration
+5. **Migration runs once** - `DataMigration` clears old keys, test carefully before deployment
+6. **Smart backup timing** - Only backs up 18:00-23:59 to avoid storage spam during active use

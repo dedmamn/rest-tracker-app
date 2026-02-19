@@ -32,9 +32,10 @@ export const useTestManager = ({
     const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
     const [currentTestResult, setCurrentTestResult] = useState<TestResult | null>(null);
 
-    const testHistory = settings.testSettings.testHistory;
-    const shouldShowFirstTimePopup = !settings.testSettings.hasCompletedFirstTest && 
-                                   settings.testSettings.showTestReminderPopup;
+    const testHistory = settings?.testSettings?.testHistory || [];
+    const shouldShowFirstTimePopup = settings?.testSettings ? 
+                                   !settings.testSettings.hasCompletedFirstTest && 
+                                   settings.testSettings.showTestReminderPopup : false;
 
     const openTestModal = useCallback(() => {
         setIsTestModalOpen(true);
@@ -65,10 +66,10 @@ export const useTestManager = ({
         setSettings(prev => ({
             ...prev,
             testSettings: {
-                ...prev.testSettings,
+                ...(prev?.testSettings || {}),
                 hasCompletedFirstTest: true,
                 showTestReminderPopup: false,
-                testHistory: [testResult, ...prev.testSettings.testHistory]
+                testHistory: [testResult, ...(prev?.testSettings?.testHistory || [])]
             }
         }));
 
@@ -81,7 +82,7 @@ export const useTestManager = ({
         setSettings(prev => ({
             ...prev,
             testSettings: {
-                ...prev.testSettings,
+                ...(prev?.testSettings || {}),
                 hasCompletedFirstTest: true,
                 showTestReminderPopup: false
             }

@@ -47,10 +47,19 @@ export const useDataManager = (): UseDataManagerReturn => {
         
         if (loadedData) {
             setActivities(loadedData.activities);
-            setSettings(loadedData.settings);
+            // Мерджим загруженные настройки с дефолтными, чтобы гарантировать наличие всех полей
+            const mergedSettings: Settings = {
+                ...defaultSettings,
+                ...loadedData.settings,
+                testSettings: {
+                    ...defaultSettings.testSettings,
+                    ...(loadedData.settings.testSettings || {})
+                }
+            };
+            setSettings(mergedSettings);
             console.log('✅ Данные успешно загружены:', {
                 activities: loadedData.activities.length,
-                theme: loadedData.settings.theme
+                theme: mergedSettings.theme
             });
         } else {
             console.log('📝 Начинаем с пустыми данными');

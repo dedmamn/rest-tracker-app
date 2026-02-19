@@ -1,6 +1,9 @@
 import { TestAnswer, FatigueScores, FatigueType, TestResult } from '../types';
 import { fatigueTypeQuestions, fatigueTypeDescriptions } from '../data/testData';
 
+// Константы для интерпретации результатов теста
+const MODERATE_FATIGUE_THRESHOLD = 11;
+
 export const calculateFatigueScores = (answers: TestAnswer[]): FatigueScores => {
     const scores: FatigueScores = {
         physical: 0,
@@ -43,7 +46,7 @@ export const getDominantFatigueTypes = (scores: FatigueScores, maxCount: number 
 
     // Сортируем по убыванию баллов и берем только значимые (>= 11 баллов)
     const significantTypes = typesWithScores
-        .filter(item => item.score >= MODERATE_FATIGUE_THRESHOLD) // Умеренная усталость начинается с 11 баллов
+        .filter(item => item.score >= 11) // Умеренная усталость начинается с 11 баллов
         .sort((a, b) => b.score - a.score)
         .slice(0, maxCount);
 

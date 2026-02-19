@@ -144,7 +144,7 @@ const Home: React.FC<HomeProps> = ({
             alignItems: 'center'
         }}>
             {/* Приветствие с кнопкой теста */}
-            <Box sx={{ mb: 3, width: '100%' }}>
+            <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
                 <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
@@ -261,7 +261,7 @@ const Home: React.FC<HomeProps> = ({
 
             {/* Сегодняшние активности */}
             {todaysActivities.length > 0 && (
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, width: '100%' }}>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                         Запланировано на сегодня
                     </Typography>
@@ -282,7 +282,7 @@ const Home: React.FC<HomeProps> = ({
 
             {/* Последние активности */}
             {activeActivities.length > 0 && (
-                <Box>
+                <Box sx={{ width: '100%' }}>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                         Ваши активности
                     </Typography>
